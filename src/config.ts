@@ -21,10 +21,10 @@ import { createAPIClient } from './client';
  * `instance.config` in a UI.
  */
 export const instanceConfigFields: IntegrationInstanceConfigFieldMap = {
-  clientId: {
+  oktaOrgUrl: {
     type: 'string',
   },
-  clientSecret: {
+  oktaApiKey: {
     type: 'string',
     mask: true,
   },
@@ -36,14 +36,14 @@ export const instanceConfigFields: IntegrationInstanceConfigFieldMap = {
  */
 export interface IntegrationConfig extends IntegrationInstanceConfig {
   /**
-   * The provider API client ID used to authenticate requests.
+   * The provider API org url used to authenticate requests. Example: https://yoursubdomain.okta.com/
    */
-  clientId: string;
+  oktaOrgUrl: string;
 
   /**
    * The provider API client secret used to authenticate requests.
    */
-  clientSecret: string;
+  oktaApiKey: string;
 }
 
 export async function validateInvocation(
@@ -51,9 +51,9 @@ export async function validateInvocation(
 ) {
   const { config } = context.instance;
 
-  if (!config.clientId || !config.clientSecret) {
+  if (!config.oktaOrgUrl || !config.oktaApiKey) {
     throw new IntegrationValidationError(
-      'Config requires all of {clientId, clientSecret}',
+      'Config requires all of {oktaOrgUrl, oktaApiKey}',
     );
   }
 

@@ -30,8 +30,8 @@ it('auth error', async () => {
 
   const executionContext = createMockExecutionContext({
     instanceConfig: {
-      clientId: 'INVALID',
-      clientSecret: 'INVALID',
+      oktaOrgUrl: 'INVALID',
+      oktaApiKey: 'INVALID',
     },
   });
 
