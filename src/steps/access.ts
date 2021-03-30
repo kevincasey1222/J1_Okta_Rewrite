@@ -18,11 +18,6 @@ export async function fetchUsers({
   logger,
 }: IntegrationStepExecutionContext<IntegrationConfig>) {
   const apiClient = createAPIClient(instance.config, logger);
-  //next line just to prove that we are pulling data
-  apiClient.oktaClient.listUsers().each((e) => {
-    console.log(e);
-  });
-  //end temporary test. Remove these lines.
   const accountEntity = (await jobState.getData(ACCOUNT_ENTITY_KEY)) as Entity;
 
   await apiClient.iterateUsers(async (user) => {

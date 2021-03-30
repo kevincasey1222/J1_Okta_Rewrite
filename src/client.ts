@@ -55,10 +55,18 @@ export class APIClient {
     // TODO make the most light-weight request possible to validate
     // authentication works with the provided credentials, throw an err if
     // authentication fails
-    const request = 'sounds good';
 
+    //next lines just to prove that we are pulling data
+    let didItWork = false;
+    await this.oktaClient.listUsers().each((e) => {
+      console.log(e);
+      didItWork = true;
+    });
+    //end temporary test. Remove these lines.
     try {
-      await request;
+      if (didItWork) {
+        console.log('sounds good');
+      }
     } catch (err) {
       throw new IntegrationProviderAuthenticationError({
         cause: err,
