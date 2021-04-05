@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+
 import createOktaClient from './okta/createOktaClient';
 
 import {

@@ -4,12 +4,12 @@ import { IntegrationConfig } from '../config';
 import { fetchGroups, fetchUsers } from './access';
 import { fetchAccountDetails } from './account';
 
-const DEFAULT_CLIENT_ID = 'dummy-acme-client-id';
-const DEFAULT_CLIENT_SECRET = 'dummy-acme-client-secret';
+const DEFAULT_ORG_URL = 'https://yoursubdomainhere.okta.com';
+const DEFAULT_API_KEY = 'dummy-okta-api-key';
 
 const integrationConfig: IntegrationConfig = {
-  clientId: process.env.CLIENT_ID || DEFAULT_CLIENT_ID,
-  clientSecret: process.env.CLIENT_SECRET || DEFAULT_CLIENT_SECRET,
+  oktaOrgUrl: process.env.OKTA_ORG_URL || DEFAULT_ORG_URL,
+  oktaApiKey: process.env.OKTA_API_KEY || DEFAULT_API_KEY,
 };
 
 test('should collect data', async () => {
@@ -39,16 +39,14 @@ test('should collect data', async () => {
   expect(accounts).toMatchGraphObjectSchema({
     _class: ['Account'],
     schema: {
-      additionalProperties: false,
       properties: {
-        _type: { const: 'acme_account' },
-        manager: { type: 'string' },
+        _type: { const: 'okta_account' },
         _rawData: {
           type: 'array',
           items: { type: 'object' },
         },
       },
-      required: ['manager'],
+      required: [],
     },
   });
 
