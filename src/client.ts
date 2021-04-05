@@ -52,25 +52,15 @@ export class APIClient {
   }
 
   public async verifyAuthentication(): Promise<void> {
-    // TODO make the most light-weight request possible to validate
-    // authentication works with the provided credentials, throw an err if
-    // authentication fails
-
-    //next lines just to prove that we are pulling data
-    let didItWork = false;
-    await this.oktaClient.listUsers().each((e) => {
-      console.log(e);
-      didItWork = true;
-    });
-    //end temporary test. Remove these lines.
+    // the most light-weight request possible to validate credentials
     try {
-      if (didItWork) {
-        console.log('sounds good');
-      }
+      //there is always at least the Everyone group
+      //note that if you don't hit the .each, it doesn't actually attempt it
+      await this.oktaClient.listGroups().each((e) => {});
     } catch (err) {
       throw new IntegrationProviderAuthenticationError({
         cause: err,
-        endpoint: 'https://localhost/api/v1/some/endpoint?limit=1',
+        endpoint: this.config.oktaOrgUrl + 'api/v1/groups',
         status: err.status,
         statusText: err.statusText,
       });

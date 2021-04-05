@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-var-requires */
-//import { IntegrationLogger } from '@jupiterone/jupiter-managed-integration-sdk';
 import { IntegrationLogger } from '@jupiterone/integration-sdk-core';
 import { OktaClient } from './types';
 import { OktaIntegrationConfig } from '../types';

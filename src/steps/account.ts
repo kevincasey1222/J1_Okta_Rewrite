@@ -6,26 +6,27 @@ import {
 
 import { IntegrationConfig } from '../config';
 
-export const ACCOUNT_ENTITY_KEY = 'entity:account';
+export const DATA_ACCOUNT_ENTITY = 'DATA_ACCOUNT_ENTITY';
+export const ACCOUNT_ENTITY_KEY = 'okta:account';
 
 export async function fetchAccountDetails({
   jobState,
+  instance,
 }: IntegrationStepExecutionContext<IntegrationConfig>) {
   const accountEntity = await jobState.addEntity(
     createIntegrationEntity({
       entityData: {
         source: {
-          id: 'acme-unique-account-id',
-          name: 'Example Co. Acme Account',
+          id: `okta-account:${instance.name}`,
+          name: 'Okta Account',
         },
         assign: {
-          _key: 'acme-unique-account-id',
-          _type: 'acme_account',
+          _key: `okta-account:${instance.id}`,
+          _type: 'okta_account',
           _class: 'Account',
-          mfaEnabled: true,
-          // This is a custom property that is not a part of the data model class
-          // hierarchy. See: https://github.com/JupiterOne/data-model/blob/master/src/schemas/Account.json
-          manager: 'Manager Name',
+          name: `Okta - ${instance.name}`,
+          displayName: `Okta - ${instance.name}`,
+          webLink: instance.config.oktaOrgUrl,
         },
       },
     }),
@@ -41,7 +42,7 @@ export const accountSteps: IntegrationStep<IntegrationConfig>[] = [
     entities: [
       {
         resourceName: 'Account',
-        _type: 'acme_account',
+        _type: 'okta_account',
         _class: 'Account',
       },
     ],
