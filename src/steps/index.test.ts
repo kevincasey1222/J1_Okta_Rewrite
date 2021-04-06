@@ -4,8 +4,8 @@ import { IntegrationConfig } from '../config';
 import { fetchGroups, fetchUsers } from './access';
 import { fetchAccountDetails } from './account';
 
-const DEFAULT_ORG_URL = 'https://yoursubdomainhere.okta.com';
-const DEFAULT_API_KEY = 'dummy-okta-api-key';
+const DEFAULT_ORG_URL = 'dummy-org-url';
+const DEFAULT_API_KEY = 'dummy-api-key';
 
 const integrationConfig: IntegrationConfig = {
   oktaOrgUrl: process.env.OKTA_ORG_URL || DEFAULT_ORG_URL,
@@ -20,8 +20,8 @@ test('should collect data', async () => {
   // Simulates dependency graph execution.
   // See https://github.com/JupiterOne/sdk/issues/262.
   await fetchAccountDetails(context);
+  await fetchGroups(context); //groups come first here
   await fetchUsers(context);
-  await fetchGroups(context);
 
   // Review snapshot, failure is a regression
   expect({
@@ -57,16 +57,19 @@ test('should collect data', async () => {
   expect(users).toMatchGraphObjectSchema({
     _class: ['User'],
     schema: {
-      additionalProperties: false,
       properties: {
-        _type: { const: 'acme_user' },
-        firstName: { type: 'string' },
+        _type: { const: 'okta_user' },
+        name: { type: 'string' },
+        webLink: {
+          type: 'string',
+          format: 'url',
+        },
         _rawData: {
           type: 'array',
           items: { type: 'object' },
         },
       },
-      required: ['firstName'],
+      required: ['webLink'],
     },
   });
 
@@ -77,12 +80,11 @@ test('should collect data', async () => {
   expect(userGroups).toMatchGraphObjectSchema({
     _class: ['UserGroup'],
     schema: {
-      additionalProperties: false,
       properties: {
-        _type: { const: 'acme_group' },
-        logoLink: {
+        _type: { const: 'okta_user_group' },
+        name: { type: 'string' },
+        webLink: {
           type: 'string',
-          // Validate that the `logoLink` property has a URL format
           format: 'url',
         },
         _rawData: {
@@ -90,7 +92,7 @@ test('should collect data', async () => {
           items: { type: 'object' },
         },
       },
-      required: ['logoLink'],
+      required: ['webLink'],
     },
   });
 });

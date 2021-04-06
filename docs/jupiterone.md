@@ -91,10 +91,13 @@ https://github.com/JupiterOne/sdk/blob/master/docs/integrations/development.md
 
 The following entities are created:
 
-| Resources | Entity `_type` | Entity `_class` |
-| --------- | -------------- | --------------- |
-| Account   | `okta_account` | `Account`       |
-| Account   | `acme_account` | `Account`       |
+| Resources          | Entity `_type`        | Entity `_class` |
+| ------------------ | --------------------- | --------------- |
+| Okta Account       | `okta_account`        | `Account`       |
+| Okta App UserGroup | `okta_app_user_group` | `UserGroup`     |
+| Okta Factor Device | `mfa_device`          | `Key`           |
+| Okta User          | `okta_user`           | `User`          |
+| Okta UserGroup     | `okta_user_group`     | `UserGroup`     |
 
 ### Relationships
 
@@ -102,9 +105,11 @@ The following relationships are created/mapped:
 
 | Source Entity `_type` | Relationship `_class` | Target Entity `_type` |
 | --------------------- | --------------------- | --------------------- |
-| `acme_account`        | **HAS**               | `acme_group`          |
-| `acme_account`        | **HAS**               | `acme_user`           |
-| `acme_group`          | **HAS**               | `acme_user`           |
+| `okta_account`        | **HAS**               | `okta_app_user_group` |
+| `okta_account`        | **HAS**               | `okta_user`           |
+| `okta_account`        | **HAS**               | `okta_user_group`     |
+| `okta_user`           | **ASSIGNED**          | `mfa_device`          |
+| `okta_user_group`     | **HAS**               | `okta_user`           |
 
 <!--
 ********************************************************************************
