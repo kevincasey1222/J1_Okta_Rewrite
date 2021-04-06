@@ -1,5 +1,9 @@
-import { createMockStepExecutionContext } from '@jupiterone/integration-sdk-testing';
+import {
+  createMockStepExecutionContext,
+  Recording,
+} from '@jupiterone/integration-sdk-testing';
 
+import { setupOktaRecording } from '../../test/setup/recording';
 import { IntegrationConfig } from '../config';
 import { fetchGroups, fetchUsers } from './access';
 import { fetchAccountDetails } from './account';
@@ -12,7 +16,20 @@ const integrationConfig: IntegrationConfig = {
   oktaApiKey: process.env.OKTA_API_KEY || DEFAULT_API_KEY,
 };
 
+jest.setTimeout(1000 * 60 * 1);
+let recording: Recording;
+afterEach(async () => {
+  await recording.stop();
+});
+
 test('should collect data', async () => {
+  recording = setupOktaRecording({
+    directory: __dirname,
+    name: 'steps',
+    redactedRequestHeaders: ['Authorization'],
+    redactedResponseHeaders: ['set-cookie', 'public-key-pins-report-only'],
+  });
+
   const context = createMockStepExecutionContext<IntegrationConfig>({
     instanceConfig: integrationConfig,
   });

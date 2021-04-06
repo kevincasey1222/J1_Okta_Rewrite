@@ -51,8 +51,13 @@ export class APIClient {
     await this.oktaClient.listUsers().each((e) => {
       users.push(e);
     });
-
-    this.usersList = users; //for use later in groups
+    await this.oktaClient
+      .listUsers({
+        filter: 'status eq "DEPROVISIONED"',
+      })
+      .each((e) => {
+        users.push(e);
+      });
 
     for (const user of users) {
       await iteratee(user);

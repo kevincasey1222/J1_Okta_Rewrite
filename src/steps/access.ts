@@ -101,39 +101,42 @@ export async function fetchUsers({
     }
 
     //create any MFA devices assigned to this user
-    const devices = await apiClient.getDevicesForUser(user.id);
-    for (const device of devices || []) {
-      const deviceEntity = await jobState.addEntity(
-        createIntegrationEntity({
-          entityData: {
-            source: device,
-            assign: {
-              _key: device.id,
-              _type: MFA_DEVICE_ENTITY_TYPE,
-              _class: ['Key', 'AccessKey'],
-              displayName: `${device.provider} ${device.factorType}`,
-              id: device.id,
-              factorType: device.factorType,
-              provider: device.provider,
-              vendorName: device.vendorName,
-              device: device.device,
-              deviceType: device.deviceType,
-              status: device.status,
-              created: device.created,
-              lastUpdated: device.lastUpdated,
-              active: device.status === 'ACTIVE',
+    if (!(user.status === 'DEPROVISIONED')) {
+      //asking for devices for DEPROV users throws error
+      const devices = await apiClient.getDevicesForUser(user.id);
+      for (const device of devices || []) {
+        const deviceEntity = await jobState.addEntity(
+          createIntegrationEntity({
+            entityData: {
+              source: device,
+              assign: {
+                _key: device.id,
+                _type: MFA_DEVICE_ENTITY_TYPE,
+                _class: ['Key', 'AccessKey'],
+                displayName: `${device.provider} ${device.factorType}`,
+                id: device.id,
+                factorType: device.factorType,
+                provider: device.provider,
+                vendorName: device.vendorName,
+                device: device.device,
+                deviceType: device.deviceType,
+                status: device.status,
+                created: device.created,
+                lastUpdated: device.lastUpdated,
+                active: device.status === 'ACTIVE',
+              },
             },
-          },
-        }),
-      );
+          }),
+        );
 
-      await jobState.addRelationship(
-        createDirectRelationship({
-          _class: RelationshipClass.ASSIGNED,
-          from: userEntity,
-          to: deviceEntity,
-        }),
-      );
+        await jobState.addRelationship(
+          createDirectRelationship({
+            _class: RelationshipClass.ASSIGNED,
+            from: userEntity,
+            to: deviceEntity,
+          }),
+        );
+      }
     }
   });
 }

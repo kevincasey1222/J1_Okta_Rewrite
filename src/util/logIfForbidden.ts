@@ -1,21 +1,7 @@
 import {
   IntegrationLogger,
-  IntegrationError,
+  IntegrationProviderAPIError,
 } from '@jupiterone/integration-sdk-core';
-
-class IntegrationApiError extends IntegrationError {
-  readonly name: string;
-
-  constructor(cause: Error) {
-    super({
-      message:
-        'Error calling API endpoint. Please contact us in Slack or at https://support.jupiterone.io if the problem continues to occur.',
-      cause,
-      code: (cause as any).code,
-    });
-    this.name = 'error_provider_api';
-  }
-}
 
 export default async function logIfForbiddenOrNotFound({
   logger,
@@ -41,7 +27,7 @@ export default async function logIfForbiddenOrNotFound({
       logger.info({ err }, `Couldn't list ${resource}`);
       await onForbidden(err);
     } else {
-      throw new IntegrationApiError(err);
+      throw new IntegrationProviderAPIError(err);
     }
   }
 }
