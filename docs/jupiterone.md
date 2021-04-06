@@ -93,6 +93,7 @@ The following entities are created:
 
 | Resources | Entity `_type` | Entity `_class` |
 | --------- | -------------- | --------------- |
+| Account   | `okta_account` | `Account`       |
 | Account   | `acme_account` | `Account`       |
 
 ### Relationships

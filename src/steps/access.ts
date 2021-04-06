@@ -15,9 +15,9 @@ import { ACCOUNT_ENTITY_KEY } from './account';
 export async function fetchUsers({
   instance,
   jobState,
+  logger,
 }: IntegrationStepExecutionContext<IntegrationConfig>) {
-  const apiClient = createAPIClient(instance.config);
-
+  const apiClient = createAPIClient(instance.config, logger);
   const accountEntity = (await jobState.getData(ACCOUNT_ENTITY_KEY)) as Entity;
 
   await apiClient.iterateUsers(async (user) => {
@@ -51,8 +51,9 @@ export async function fetchUsers({
 export async function fetchGroups({
   instance,
   jobState,
+  logger,
 }: IntegrationStepExecutionContext<IntegrationConfig>) {
-  const apiClient = createAPIClient(instance.config);
+  const apiClient = createAPIClient(instance.config, logger);
 
   const accountEntity = (await jobState.getData(ACCOUNT_ENTITY_KEY)) as Entity;
 

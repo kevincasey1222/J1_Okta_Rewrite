@@ -1,10 +1,17 @@
-import http from 'http';
+/* eslint-disable @typescript-eslint/no-empty-function */
 
-import { IntegrationProviderAuthenticationError } from '@jupiterone/integration-sdk-core';
+import createOktaClient from './okta/createOktaClient';
+
+import {
+  IntegrationLogger,
+  IntegrationProviderAuthenticationError,
+} from '@jupiterone/integration-sdk-core';
 
 import { IntegrationConfig } from './config';
 
 export type ResourceIteratee<T> = (each: T) => Promise<void> | void;
+
+import { OktaClient } from './okta/types';
 
 // Providers often supply types with their API libraries.
 
@@ -41,37 +48,21 @@ export type AcmeGroup = Opaque<any, 'AcmeGroup'>;
  * resources.
  */
 export class APIClient {
-  constructor(readonly config: IntegrationConfig) {}
+  oktaClient: OktaClient;
+  constructor(readonly config: IntegrationConfig, logger: IntegrationLogger) {
+    this.oktaClient = createOktaClient(logger, config);
+  }
 
   public async verifyAuthentication(): Promise<void> {
-    // TODO make the most light-weight request possible to validate
-    // authentication works with the provided credentials, throw an err if
-    // authentication fails
-    const request = new Promise<void>((resolve, reject) => {
-      http.get(
-        {
-          hostname: 'localhost',
-          port: 443,
-          path: '/api/v1/some/endpoint?limit=1',
-          agent: false,
-          timeout: 10,
-        },
-        (res) => {
-          if (res.statusCode !== 200) {
-            reject(new Error('Provider authentication failed'));
-          } else {
-            resolve();
-          }
-        },
-      );
-    });
-
+    // the most light-weight request possible to validate credentials
     try {
-      await request;
+      //there is always at least the Everyone group
+      //note that if you don't hit the .each, it doesn't actually attempt it
+      await this.oktaClient.listGroups().each((e) => {});
     } catch (err) {
       throw new IntegrationProviderAuthenticationError({
         cause: err,
-        endpoint: 'https://localhost/api/v1/some/endpoint?limit=1',
+        endpoint: this.config.oktaOrgUrl + 'api/v1/groups',
         status: err.status,
         statusText: err.statusText,
       });
@@ -144,6 +135,9 @@ export class APIClient {
   }
 }
 
-export function createAPIClient(config: IntegrationConfig): APIClient {
-  return new APIClient(config);
+export function createAPIClient(
+  config: IntegrationConfig,
+  logger: IntegrationLogger,
+): APIClient {
+  return new APIClient(config, logger);
 }
