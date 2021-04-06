@@ -5,6 +5,7 @@ import {
 } from '@jupiterone/integration-sdk-core';
 
 import { IntegrationConfig } from '../config';
+import getOktaAccountInfo from '../util/getOktaAccountInfo';
 
 export const DATA_ACCOUNT_ENTITY = 'DATA_ACCOUNT_ENTITY';
 
@@ -12,6 +13,14 @@ export async function fetchAccountDetails({
   jobState,
   instance,
 }: IntegrationStepExecutionContext<IntegrationConfig>) {
+  const oktaAccountInfo = getOktaAccountInfo({
+    name: instance.name,
+    config: instance.config,
+  });
+  let displayName = oktaAccountInfo.name;
+  if (oktaAccountInfo.preview) {
+    displayName += ' (preview)';
+  }
   const accountId = instance.config.oktaOrgUrl.replace(/^https?:\/\//, '');
   const accountEntity = await jobState.addEntity(
     createIntegrationEntity({
@@ -24,8 +33,8 @@ export async function fetchAccountDetails({
           _key: `okta_account_${accountId}`,
           _type: 'okta_account',
           _class: 'Account',
-          name: `Okta - ${instance.name}`,
-          displayName: `Okta - ${instance.name}`,
+          name: oktaAccountInfo.name,
+          displayName: displayName,
           webLink: instance.config.oktaOrgUrl,
           accountId,
         },
