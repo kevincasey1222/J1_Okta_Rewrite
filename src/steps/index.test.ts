@@ -8,7 +8,7 @@ import { IntegrationConfig } from '../config';
 import { fetchGroups, fetchUsers } from './access';
 import { fetchAccountDetails } from './account';
 
-const DEFAULT_ORG_URL = 'dummy-org-url';
+const DEFAULT_ORG_URL = 'https://dev-857255.okta.com/';
 const DEFAULT_API_KEY = 'dummy-api-key';
 
 const integrationConfig: IntegrationConfig = {
