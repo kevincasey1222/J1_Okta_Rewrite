@@ -1,18 +1,27 @@
-import { createMockStepExecutionContext } from '@jupiterone/integration-sdk-testing';
+import {
+  createMockStepExecutionContext,
+  Recording,
+} from '@jupiterone/integration-sdk-testing';
 
+import { setupOktaRecording } from '../../test/setup/recording';
 import { IntegrationConfig } from '../config';
 import { fetchGroups, fetchUsers } from './access';
 import { fetchAccountDetails } from './account';
 
-const DEFAULT_ORG_URL = 'https://yoursubdomainhere.okta.com';
-const DEFAULT_API_KEY = 'dummy-okta-api-key';
+import { integrationConfig } from '../../test/config';
 
-const integrationConfig: IntegrationConfig = {
-  oktaOrgUrl: process.env.OKTA_ORG_URL || DEFAULT_ORG_URL,
-  oktaApiKey: process.env.OKTA_API_KEY || DEFAULT_API_KEY,
-};
+jest.setTimeout(1000 * 60 * 1);
+let recording: Recording;
+afterEach(async () => {
+  await recording.stop();
+});
 
 test('should collect data', async () => {
+  recording = setupOktaRecording({
+    directory: __dirname,
+    name: 'steps', //redaction of headers is in setupOktaRecording
+  });
+
   const context = createMockStepExecutionContext<IntegrationConfig>({
     instanceConfig: integrationConfig,
   });
@@ -20,8 +29,8 @@ test('should collect data', async () => {
   // Simulates dependency graph execution.
   // See https://github.com/JupiterOne/sdk/issues/262.
   await fetchAccountDetails(context);
+  await fetchGroups(context); //groups come first here
   await fetchUsers(context);
-  await fetchGroups(context);
 
   // Review snapshot, failure is a regression
   expect({
@@ -57,16 +66,19 @@ test('should collect data', async () => {
   expect(users).toMatchGraphObjectSchema({
     _class: ['User'],
     schema: {
-      additionalProperties: false,
       properties: {
-        _type: { const: 'acme_user' },
-        firstName: { type: 'string' },
+        _type: { const: 'okta_user' },
+        name: { type: 'string' },
+        webLink: {
+          type: 'string',
+          format: 'url',
+        },
         _rawData: {
           type: 'array',
           items: { type: 'object' },
         },
       },
-      required: ['firstName'],
+      required: ['webLink'],
     },
   });
 
@@ -77,12 +89,11 @@ test('should collect data', async () => {
   expect(userGroups).toMatchGraphObjectSchema({
     _class: ['UserGroup'],
     schema: {
-      additionalProperties: false,
       properties: {
-        _type: { const: 'acme_group' },
-        logoLink: {
+        _type: { const: 'okta_user_group' },
+        name: { type: 'string' },
+        webLink: {
           type: 'string',
-          // Validate that the `logoLink` property has a URL format
           format: 'url',
         },
         _rawData: {
@@ -90,7 +101,7 @@ test('should collect data', async () => {
           items: { type: 'object' },
         },
       },
-      required: ['logoLink'],
+      required: ['webLink'],
     },
   });
 });
