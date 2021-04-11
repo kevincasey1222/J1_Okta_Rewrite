@@ -6,7 +6,14 @@ import {
 import { IntegrationConfig } from './config';
 export type ResourceIteratee<T> = (each: T) => Promise<void> | void;
 import createOktaClient from './okta/createOktaClient';
-import { OktaClient, OktaFactor, OktaUser, OktaUserGroup } from './okta/types';
+import {
+  OktaClient,
+  OktaFactor,
+  OktaUser,
+  OktaUserGroup,
+  OktaApplication,
+  OktaApplicationGroup,
+} from './okta/types';
 
 /**
  * An APIClient maintains authentication state and provides an interface to
@@ -82,6 +89,26 @@ export class APIClient {
     }
   }
 
+  /**
+   * Iterates each application resource in the provider.
+   *
+   * @param iteratee receives each resource to produce entities/relationships
+   */
+  public async iterateApplications(
+    iteratee: ResourceIteratee<OktaApplication>,
+  ): Promise<void> {
+    const apps: OktaApplication[] = [];
+    await this.oktaClient.listApplications().each((e) => {
+      apps.push(e);
+      console.log(e); //TODO remove this line
+    });
+
+    for (const app of apps) {
+      await iteratee(app);
+    }
+  }
+
+  //retrieves the group ids that a user belongs to
   public async getGroupsForUser(id) {
     const groupIds: string[] = [];
     await this.oktaClient.listUserGroups(id).each((e) => {
