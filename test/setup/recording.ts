@@ -11,5 +11,7 @@ export function setupOktaRecording(
 ): Recording {
   return setupRecording({
     ...input,
+    redactedRequestHeaders: ['Authorization'],
+    redactedResponseHeaders: ['set-cookie', 'public-key-pins-report-only'],
   });
 }

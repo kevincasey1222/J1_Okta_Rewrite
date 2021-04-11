@@ -19,9 +19,7 @@ afterEach(async () => {
 test('should collect data', async () => {
   recording = setupOktaRecording({
     directory: __dirname,
-    name: 'steps',
-    redactedRequestHeaders: ['Authorization'],
-    redactedResponseHeaders: ['set-cookie', 'public-key-pins-report-only'],
+    name: 'steps', //redaction of headers is in setupOktaRecording
   });
 
   const context = createMockStepExecutionContext<IntegrationConfig>({

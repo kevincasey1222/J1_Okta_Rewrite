@@ -101,7 +101,7 @@ export async function fetchUsers({
     }
 
     //create any MFA devices assigned to this user
-    if (!(user.status === 'DEPROVISIONED')) {
+    if (user.status !== 'DEPROVISIONED') {
       //asking for devices for DEPROV users throws error
       const devices = await apiClient.getDevicesForUser(user.id);
       for (const device of devices || []) {
