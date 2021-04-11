@@ -8,13 +8,7 @@ import { IntegrationConfig } from '../config';
 import { fetchGroups, fetchUsers } from './access';
 import { fetchAccountDetails } from './account';
 
-const DEFAULT_ORG_URL = 'https://dev-857255.okta.com/';
-const DEFAULT_API_KEY = 'dummy-api-key';
-
-const integrationConfig: IntegrationConfig = {
-  oktaOrgUrl: process.env.OKTA_ORG_URL || DEFAULT_ORG_URL,
-  oktaApiKey: process.env.OKTA_API_KEY || DEFAULT_API_KEY,
-};
+import { integrationConfig } from '../../test/config';
 
 jest.setTimeout(1000 * 60 * 1);
 let recording: Recording;
