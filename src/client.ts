@@ -100,7 +100,6 @@ export class APIClient {
     const apps: OktaApplication[] = [];
     await this.oktaClient.listApplications().each((e) => {
       apps.push(e);
-      console.log(e); //TODO remove this line
     });
 
     for (const app of apps) {
@@ -109,21 +108,39 @@ export class APIClient {
   }
 
   //retrieves the group ids that a user belongs to
-  public async getGroupsForUser(id) {
+  public async getGroupsForUser(userId) {
     const groupIds: string[] = [];
-    await this.oktaClient.listUserGroups(id).each((e) => {
+    await this.oktaClient.listUserGroups(userId).each((e) => {
       groupIds.push(e.id);
     });
     return groupIds;
   }
 
   //retrieves any MFA (multi-factor authentication) devices assigned to user
-  public async getDevicesForUser(id) {
+  public async getDevicesForUser(userId) {
     const devices: OktaFactor[] = [];
-    await this.oktaClient.listFactors(id).each((e) => {
+    await this.oktaClient.listFactors(userId).each((e) => {
       devices.push(e);
     });
     return devices;
+  }
+
+  //retrieves any user group ids assigned to this application
+  public async getGroupsForApp(appId) {
+    const groupIds: string[] = [];
+    await this.oktaClient.listApplicationGroupAssignments(appId).each((e) => {
+      groupIds.push(e.id);
+    });
+    return groupIds;
+  }
+
+  //retrieves any individual user ids assigned to this application
+  public async getUsersForApp(appId) {
+    const userIds: string[] = [];
+    await this.oktaClient.listApplicationUsers(appId).each((e) => {
+      userIds.push(e.id);
+    });
+    return userIds;
   }
 }
 
