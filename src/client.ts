@@ -12,6 +12,8 @@ import {
   OktaUser,
   OktaUserGroup,
   OktaApplication,
+  OktaApplicationGroup,
+  OktaApplicationUser,
 } from './okta/types';
 
 /**
@@ -124,22 +126,22 @@ export class APIClient {
     return devices;
   }
 
-  //retrieves any user group ids assigned to this application
+  //retrieves any user groups assigned to this application
   public async getGroupsForApp(appId) {
-    const groupIds: string[] = [];
+    const groups: OktaApplicationGroup[] = [];
     await this.oktaClient.listApplicationGroupAssignments(appId).each((e) => {
-      groupIds.push(e.id);
+      groups.push(e);
     });
-    return groupIds;
+    return groups;
   }
 
   //retrieves any individual user ids assigned to this application
   public async getUsersForApp(appId) {
-    const userIds: string[] = [];
+    const users: OktaApplicationUser[] = [];
     await this.oktaClient.listApplicationUsers(appId).each((e) => {
-      userIds.push(e.id);
+      users.push(e);
     });
-    return userIds;
+    return users;
   }
 }
 

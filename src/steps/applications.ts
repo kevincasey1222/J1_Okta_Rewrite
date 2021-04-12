@@ -6,6 +6,8 @@ import {
   IntegrationStepExecutionContext,
   RelationshipClass,
   IntegrationMissingKeyError,
+  RelationshipDirection,
+  createMappedRelationship,
 } from '@jupiterone/integration-sdk-core';
 import * as url from 'url';
 import { createAPIClient } from '../client';
@@ -23,8 +25,13 @@ import {
 } from '../util/knownVendors';
 
 import { OktaIntegrationConfig } from '../types';
+import { OktaApplicationGroup } from '../okta/types';
 
 export const APPLICATION_ENTITY_TYPE = 'okta_application';
+export const GROUP_IAM_ROLE_RELATIONSHIP_TYPE =
+  'okta_user_group_assigned_aws_iam_role';
+export const USER_IAM_ROLE_RELATIONSHIP_TYPE =
+  'okta_user_assigned_aws_iam_role';
 
 export async function fetchApplications({
   instance,
@@ -135,14 +142,16 @@ export async function fetchApplications({
       }),
     );
 
-    //get the groupIds that are assigned this app
-    const groupIds = await apiClient.getGroupsForApp(app.id);
-    for (const groupId of groupIds || []) {
-      const groupEntity = await jobState.findEntity(groupId);
+    //get the groups that are assigned this app
+    const groups: OktaApplicationGroup[] = await apiClient.getGroupsForApp(
+      app.id,
+    );
+    for (const group of groups || []) {
+      const groupEntity = await jobState.findEntity(group.id);
 
       if (!groupEntity) {
         throw new IntegrationMissingKeyError(
-          `Expected group with key to exist (key=${groupId})`,
+          `Expected group with key to exist (key=${group.id})`,
         );
       }
 
@@ -153,16 +162,35 @@ export async function fetchApplications({
           to: appEntity,
         }),
       );
+
+      //if this appEntity points to an AWS IAM resource,
+      //also add global mappings for this group to that resource
+      if (assignData['awsAccountId']) {
+        if (group.profile) {
+          const profile = group.profile;
+          for (const role of profile.samlRoles || [profile.role]) {
+            const relationship = mapAWSRoleAssignment({
+              sourceKey: group.id,
+              role,
+              relationshipType: GROUP_IAM_ROLE_RELATIONSHIP_TYPE,
+              awsAccountId: assignData['awsAccountId'],
+            });
+            if (relationship) {
+              await jobState.addRelationship(relationship);
+            }
+          }
+        }
+      }
     }
 
     //get the userIds that are assigned to this app individually
-    const userIds = await apiClient.getUsersForApp(app.id);
-    for (const userId of userIds || []) {
-      const userEntity = await jobState.findEntity(userId);
+    const users = await apiClient.getUsersForApp(app.id);
+    for (const user of users || []) {
+      const userEntity = await jobState.findEntity(user.id);
 
       if (!userEntity) {
         throw new IntegrationMissingKeyError(
-          `Expected user with key to exist (key=${userId})`,
+          `Expected user with key to exist (key=${user.id})`,
         );
       }
 
@@ -173,9 +201,110 @@ export async function fetchApplications({
           to: appEntity,
         }),
       );
+
+      //if this appEntity points to an AWS IAM resource,
+      //also add global mappings for this user to that resource
+      if (assignData['awsAccountId']) {
+        if (user.profile) {
+          const profile = user.profile;
+          for (const role of profile.samlRoles || [profile.role]) {
+            const relationship = mapAWSRoleAssignment({
+              sourceKey: user.id,
+              role: role || '',
+              relationshipType: USER_IAM_ROLE_RELATIONSHIP_TYPE,
+              awsAccountId: assignData['awsAccountId'],
+            });
+            if (relationship) {
+              await jobState.addRelationship(relationship);
+            }
+          }
+        }
+      }
     }
   });
 }
+
+/**
+ * When an Okta application represents access to an AWS Account (the application
+ * has an `awsAccountId`), the application user or group profile may define a
+ * `role` or `samlRoles` property that identifies one or more AWS IAM roles that
+ * may be assumed by the user or group. The roles are parsed to create mapped
+ * relationships to the AWS IAM roles. The relationship is not created unless
+ * the role is already in the graph.
+ *
+ * See
+ * https://saml-doc.okta.com/SAML_Docs/How-to-Configure-SAML-2.0-for-Amazon-Web-Service#scenarioB,
+ * bullet point #11.
+ *
+ * - The primary SAML roles are listed directly
+ * - The secondary SAML roles are listed as `Account Name - Role Name` or
+ *   `[Account Alias] - Role Name`
+ *
+ * @param sourceKey the `_key` of the user or group which has access to the
+ * `awsAccountId`
+ * @param role the AWS IAM role identifier provided by Okta
+ * @param awsAccountId the application `awsAccountId`
+ */
+export function mapAWSRoleAssignment({
+  sourceKey,
+  role,
+  relationshipType,
+  awsAccountId,
+}: {
+  sourceKey: string;
+  role: string;
+  relationshipType: string;
+  awsAccountId: string;
+}) {
+  const regex = /\[?([a-zA-Z0-9_-]+)\]? -- ([a-zA-Z0-9_-]+)/;
+  const match = role && regex.exec(role);
+
+  if (match) {
+    const awsAccountName = match[1];
+    const roleName = match[2];
+    return createMappedRelationship({
+      _key: `${sourceKey}|assigned|${awsAccountName}|${roleName}`,
+      _type: relationshipType,
+      _class: RelationshipClass.ASSIGNED,
+      _mapping: {
+        sourceEntityKey: sourceKey,
+        relationshipDirection: RelationshipDirection.REVERSE,
+        targetFilterKeys: [['_type', 'roleName', 'tag.AccountName']],
+        targetEntity: {
+          _class: 'AccessRole',
+          _type: 'aws_iam_role',
+          roleName,
+          name: roleName,
+          displayName: roleName,
+          'tag.AccountName': awsAccountName,
+        },
+        skipTargetCreation: true,
+      },
+    });
+  } else if (role) {
+    const roleArn = `arn:aws:iam::${awsAccountId}:role/${role}`;
+    return createMappedRelationship({
+      _key: `${sourceKey}|assigned|${roleArn}`,
+      _type: relationshipType,
+      _class: RelationshipClass.ASSIGNED,
+      _mapping: {
+        sourceEntityKey: sourceKey,
+        relationshipDirection: RelationshipDirection.REVERSE,
+        targetFilterKeys: [['_type', '_key']],
+        targetEntity: {
+          _class: 'AccessRole',
+          _type: 'aws_iam_role',
+          _key: roleArn,
+          roleName: role,
+          name: role,
+          displayName: role,
+        },
+        skipTargetCreation: true,
+      },
+    });
+  }
+}
+
 export const applicationSteps: IntegrationStep<IntegrationConfig>[] = [
   {
     id: 'fetch-applications',
