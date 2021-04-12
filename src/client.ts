@@ -12,7 +12,6 @@ import {
   OktaUser,
   OktaUserGroup,
   OktaApplication,
-  OktaApplicationGroup,
 } from './okta/types';
 
 /**
