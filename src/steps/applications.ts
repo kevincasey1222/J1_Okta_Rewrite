@@ -127,7 +127,6 @@ export async function fetchApplications({
       }),
     );
 
-    //TODO: change the below to be right
     await jobState.addRelationship(
       createDirectRelationship({
         _class: RelationshipClass.HAS,
@@ -136,7 +135,7 @@ export async function fetchApplications({
       }),
     );
 
-    //assign the groups that use this app
+    //get the groupIds that are assigned this app
     const groupIds = await apiClient.getGroupsForApp(app.id);
     for (const groupId of groupIds || []) {
       const groupEntity = await jobState.findEntity(groupId);
@@ -151,6 +150,26 @@ export async function fetchApplications({
         createDirectRelationship({
           _class: RelationshipClass.ASSIGNED,
           from: groupEntity,
+          to: appEntity,
+        }),
+      );
+    }
+
+    //get the userIds that are assigned to this app individually
+    const userIds = await apiClient.getUsersForApp(app.id);
+    for (const userId of userIds || []) {
+      const userEntity = await jobState.findEntity(userId);
+
+      if (!userEntity) {
+        throw new IntegrationMissingKeyError(
+          `Expected user with key to exist (key=${userId})`,
+        );
+      }
+
+      await jobState.addRelationship(
+        createDirectRelationship({
+          _class: RelationshipClass.ASSIGNED,
+          from: userEntity,
           to: appEntity,
         }),
       );
@@ -179,6 +198,12 @@ export const applicationSteps: IntegrationStep<IntegrationConfig>[] = [
         _type: 'okta_user_group_assigned_application',
         _class: RelationshipClass.ASSIGNED,
         sourceType: USER_GROUP_ENTITY_TYPE,
+        targetType: APPLICATION_ENTITY_TYPE,
+      },
+      {
+        _type: 'okta_user_assigned_application',
+        _class: RelationshipClass.ASSIGNED,
+        sourceType: 'okta_user',
         targetType: APPLICATION_ENTITY_TYPE,
       },
     ],

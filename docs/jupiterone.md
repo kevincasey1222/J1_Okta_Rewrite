@@ -110,6 +110,7 @@ The following relationships are created/mapped:
 | `okta_account`        | **HAS**               | `okta_application`    |
 | `okta_account`        | **HAS**               | `okta_user`           |
 | `okta_account`        | **HAS**               | `okta_user_group`     |
+| `okta_user`           | **ASSIGNED**          | `okta_application`    |
 | `okta_user`           | **ASSIGNED**          | `mfa_device`          |
 | `okta_user_group`     | **ASSIGNED**          | `okta_application`    |
 | `okta_user_group`     | **HAS**               | `okta_user`           |
