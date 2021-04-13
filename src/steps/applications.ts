@@ -10,6 +10,7 @@ import {
   createMappedRelationship,
 } from '@jupiterone/integration-sdk-core';
 import * as url from 'url';
+import * as lodash from 'lodash';
 import { createAPIClient } from '../client';
 import { IntegrationConfig } from '../config';
 import { DATA_ACCOUNT_ENTITY } from './account';
@@ -52,21 +53,17 @@ export async function fetchApplications({
     let loginUrl;
 
     if (app._links?.logo) {
-      //the original said:
-      //  imageUrl = [app._links.logo].flat()[0].href;
-      // but TypeScript is complaining that flat() dne
-      //TODO : are there really nested arrays in some cases?
-      // And if so, how best to flatten them in this case?
-      imageUrl = app._links?.logo[0].href;
+      imageUrl = lodash.flatten([app._links.logo])[0].href;
+      //imageUrl = app._links?.logo[0].href;
     }
 
     if (app._links?.appLinks) {
-      //const links = [app._links.appLinks].flat();
-      //const link = links.find((l) => l.name === 'login') || links[0];
-      // loginUrl = link && link.href;
-      //same typescript error as in .logo
-      const link = app._links?.appLinks[0];
+      const links = lodash.flatten([app._links.appLinks]);
+      const link = links.find((l) => l.name === 'login') || links[0];
       loginUrl = link && link.href;
+      //same typescript error as in .logo
+      //const link = app._links?.appLinks[0];
+      //loginUrl = link && link.href;
     }
 
     const oktaAccountInfo = getOktaAccountInfo(instance);
