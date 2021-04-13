@@ -89,7 +89,7 @@ export async function fetchApplications({
       loginUrl,
     };
 
-    const appSettings = app.settings && app.settings.app;
+    const appSettings = app.settings?.app;
     if (appSettings) {
       if (appSettings.awsEnvironmentType === 'aws.amazon') {
         if (appSettings.identityProviderArn) {

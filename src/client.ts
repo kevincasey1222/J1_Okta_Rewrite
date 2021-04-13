@@ -55,21 +55,16 @@ export class APIClient {
   public async iterateUsers(
     iteratee: ResourceIteratee<OktaUser>,
   ): Promise<void> {
-    const users: OktaUser[] = [];
-    await this.oktaClient.listUsers().each((e) => {
-      users.push(e);
+    await this.oktaClient.listUsers().each(async (user) => {
+      await iteratee(user);
     });
     await this.oktaClient
       .listUsers({
         filter: 'status eq "DEPROVISIONED"',
       })
-      .each((e) => {
-        users.push(e);
+      .each(async (user) => {
+        await iteratee(user);
       });
-
-    for (const user of users) {
-      await iteratee(user);
-    }
   }
 
   /**
@@ -80,14 +75,9 @@ export class APIClient {
   public async iterateGroups(
     iteratee: ResourceIteratee<OktaUserGroup>,
   ): Promise<void> {
-    const groups: OktaUserGroup[] = [];
-    await this.oktaClient.listGroups().each((e) => {
-      groups.push(e);
-    });
-
-    for (const group of groups) {
+    await this.oktaClient.listGroups().each(async (group) => {
       await iteratee(group);
-    }
+    });
   }
 
   /**
@@ -98,23 +88,18 @@ export class APIClient {
   public async iterateApplications(
     iteratee: ResourceIteratee<OktaApplication>,
   ): Promise<void> {
-    const apps: OktaApplication[] = [];
-    await this.oktaClient.listApplications().each((e) => {
-      apps.push(e);
-    });
-
-    for (const app of apps) {
+    await this.oktaClient.listApplications().each(async (app) => {
       await iteratee(app);
-    }
+    });
   }
 
   //retrieves the group ids that a user belongs to
   public async getGroupsForUser(userId) {
-    const groupIds: string[] = [];
+    const groups: OktaUserGroup[] = [];
     await this.oktaClient.listUserGroups(userId).each((e) => {
-      groupIds.push(e.id);
+      groups.push(e);
     });
-    return groupIds;
+    return groups;
   }
 
   //retrieves any MFA (multi-factor authentication) devices assigned to user
