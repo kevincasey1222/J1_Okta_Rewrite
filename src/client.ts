@@ -6,7 +6,13 @@ import {
 import { IntegrationConfig } from './config';
 export type ResourceIteratee<T> = (each: T) => Promise<void> | void;
 import createOktaClient from './okta/createOktaClient';
-import { OktaClient, OktaFactor, OktaUser, OktaUserGroup } from './okta/types';
+import {
+  OktaClient,
+  OktaFactor,
+  OktaUser,
+  OktaUserGroup,
+  OktaApplication,
+} from './okta/types';
 
 /**
  * An APIClient maintains authentication state and provides an interface to
@@ -82,21 +88,58 @@ export class APIClient {
     }
   }
 
-  public async getGroupsForUser(id) {
+  /**
+   * Iterates each application resource in the provider.
+   *
+   * @param iteratee receives each resource to produce entities/relationships
+   */
+  public async iterateApplications(
+    iteratee: ResourceIteratee<OktaApplication>,
+  ): Promise<void> {
+    const apps: OktaApplication[] = [];
+    await this.oktaClient.listApplications().each((e) => {
+      apps.push(e);
+    });
+
+    for (const app of apps) {
+      await iteratee(app);
+    }
+  }
+
+  //retrieves the group ids that a user belongs to
+  public async getGroupsForUser(userId) {
     const groupIds: string[] = [];
-    await this.oktaClient.listUserGroups(id).each((e) => {
+    await this.oktaClient.listUserGroups(userId).each((e) => {
       groupIds.push(e.id);
     });
     return groupIds;
   }
 
   //retrieves any MFA (multi-factor authentication) devices assigned to user
-  public async getDevicesForUser(id) {
+  public async getDevicesForUser(userId) {
     const devices: OktaFactor[] = [];
-    await this.oktaClient.listFactors(id).each((e) => {
+    await this.oktaClient.listFactors(userId).each((e) => {
       devices.push(e);
     });
     return devices;
+  }
+
+  //retrieves any user group ids assigned to this application
+  public async getGroupsForApp(appId) {
+    const groupIds: string[] = [];
+    await this.oktaClient.listApplicationGroupAssignments(appId).each((e) => {
+      groupIds.push(e.id);
+    });
+    return groupIds;
+  }
+
+  //retrieves any individual user ids assigned to this application
+  public async getUsersForApp(appId) {
+    const userIds: string[] = [];
+    await this.oktaClient.listApplicationUsers(appId).each((e) => {
+      userIds.push(e.id);
+    });
+    return userIds;
   }
 }
 
