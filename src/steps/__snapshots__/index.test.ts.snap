@@ -567,6 +567,113 @@ Object {
       "verifiedEmails": undefined,
       "webLink": "https://dev-857255-admin.okta.com/admin/user/profile/view/00us60gayc3EIwpRc4x6",
     },
+    Object {
+      "_class": Array [
+        "Application",
+      ],
+      "_key": "0oa2vpmqxp82pl9sk4x7",
+      "_rawData": Array [
+        Object {
+          "name": "default",
+          "rawData": AutoLoginApplication {
+            "_links": Object {
+              "appLinks": Array [
+                Object {
+                  "href": "https://dev-857255.okta.com/home/slack/0oa2vpmqxp82pl9sk4x7/19411",
+                  "name": "slack_ink",
+                  "type": "text/html",
+                },
+              ],
+              "deactivate": Object {
+                "href": "https://dev-857255.okta.com/api/v1/apps/0oa2vpmqxp82pl9sk4x7/lifecycle/deactivate",
+              },
+              "groups": Object {
+                "href": "https://dev-857255.okta.com/api/v1/apps/0oa2vpmqxp82pl9sk4x7/groups",
+              },
+              "logo": Array [
+                Object {
+                  "href": "https://ok11static.oktacdn.com/fs/bcg/4/gfs21ghft9NRPUARi4x7",
+                  "name": "medium",
+                  "type": "image/png",
+                },
+              ],
+              "users": Object {
+                "href": "https://dev-857255.okta.com/api/v1/apps/0oa2vpmqxp82pl9sk4x7/users",
+              },
+            },
+            "accessibility": ApplicationAccessibility {
+              "errorRedirectUrl": null,
+              "loginRedirectUrl": null,
+              "selfService": false,
+            },
+            "created": "2021-04-11T16:09:31.000Z",
+            "credentials": SchemeApplicationCredentials {
+              "revealPassword": true,
+              "scheme": "EDIT_USERNAME_AND_PASSWORD",
+              "signing": ApplicationCredentialsSigning {},
+              "userNameTemplate": ApplicationCredentialsUsernameTemplate {
+                "template": "\${source.login}",
+                "type": "BUILT_IN",
+              },
+            },
+            "features": Array [],
+            "id": "0oa2vpmqxp82pl9sk4x7",
+            "label": "Dev Integrations Slack",
+            "lastUpdated": "2021-04-11T16:10:13.000Z",
+            "name": "slack",
+            "settings": AutoLoginApplicationSettings {
+              "app": ApplicationSettingsApplication {
+                "domain": "jptrone.slack.com",
+                "userEmailValue": "false",
+              },
+              "notifications": ApplicationSettingsNotifications {
+                "vpn": ApplicationSettingsNotificationsVpn {
+                  "helpUrl": null,
+                  "message": null,
+                  "network": ApplicationSettingsNotificationsVpnNetwork {
+                    "connection": "DISABLED",
+                  },
+                },
+              },
+            },
+            "signOnMode": "AUTO_LOGIN",
+            "status": "ACTIVE",
+            "visibility": ApplicationVisibility {
+              "appLinks": Object {
+                "slack_ink": true,
+              },
+              "autoSubmitToolbar": true,
+              "hide": ApplicationVisibilityHide {
+                "iOS": false,
+                "web": false,
+              },
+            },
+          },
+        },
+      ],
+      "_type": "okta_application",
+      "active": true,
+      "appAccountId": "jptrone.slack.com",
+      "appAccountType": "slack_account",
+      "appDomain": "jptrone.slack.com",
+      "appVendorName": "Slack",
+      "created": "2021-04-11T16:09:31.000Z",
+      "createdOn": undefined,
+      "displayName": "Dev Integrations Slack",
+      "features": Array [],
+      "id": "0oa2vpmqxp82pl9sk4x7",
+      "imageUrl": "https://ok11static.oktacdn.com/fs/bcg/4/gfs21ghft9NRPUARi4x7",
+      "isMultiInstanceApp": false,
+      "isSAMLApp": false,
+      "label": "Dev Integrations Slack",
+      "lastUpdated": "2021-04-11T16:10:13.000Z",
+      "loginUrl": "https://dev-857255.okta.com/home/slack/0oa2vpmqxp82pl9sk4x7/19411",
+      "name": "slack",
+      "shortName": "slack",
+      "signOnMode": "AUTO_LOGIN",
+      "status": "ACTIVE",
+      "webLink": "https://dev-857255-admin.okta.com/admin/app/slack/instance/0oa2vpmqxp82pl9sk4x7",
+    },
   ],
   "collectedRelationships": Array [
     Object {
@@ -697,6 +804,30 @@ Object {
       "_type": "okta_user_group_has_user",
       "displayName": "HAS",
     },
+    Object {
+      "_class": "HAS",
+      "_fromEntityKey": "okta_account_dev-857255.okta.com/",
+      "_key": "okta_account_dev-857255.okta.com/|has|0oa2vpmqxp82pl9sk4x7",
+      "_toEntityKey": "0oa2vpmqxp82pl9sk4x7",
+      "_type": "okta_account_has_application",
+      "displayName": "HAS",
+    },
+    Object {
+      "_class": "ASSIGNED",
+      "_fromEntityKey": "00g2ovdjf9Ahbffgj4x7",
+      "_key": "00g2ovdjf9Ahbffgj4x7|assigned|0oa2vpmqxp82pl9sk4x7",
+      "_toEntityKey": "0oa2vpmqxp82pl9sk4x7",
+      "_type": "okta_user_group_assigned_application",
+      "displayName": "ASSIGNED",
+    },
+    Object {
+      "_class": "ASSIGNED",
+      "_fromEntityKey": "00u2ot2iur46vIUsV4x7",
+      "_key": "00u2ot2iur46vIUsV4x7|assigned|0oa2vpmqxp82pl9sk4x7",
+      "_toEntityKey": "0oa2vpmqxp82pl9sk4x7",
+      "_type": "okta_user_assigned_application",
+      "displayName": "ASSIGNED",
+    },
   ],
   "encounteredTypes": Array [
     "okta_account",
@@ -705,8 +836,12 @@ Object {
     "okta_user",
     "okta_account_has_user",
     "okta_user_group_has_user",
+    "okta_application",
+    "okta_account_has_application",
+    "okta_user_group_assigned_application",
+    "okta_user_assigned_application",
   ],
-  "numCollectedEntities": 10,
-  "numCollectedRelationships": 16,
+  "numCollectedEntities": 11,
+  "numCollectedRelationships": 19,
 }
 `;

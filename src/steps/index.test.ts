@@ -7,6 +7,7 @@ import { setupOktaRecording } from '../../test/setup/recording';
 import { IntegrationConfig } from '../config';
 import { fetchGroups, fetchUsers } from './access';
 import { fetchAccountDetails } from './account';
+import { fetchApplications } from './applications';
 
 import { integrationConfig } from '../../test/config';
 
@@ -29,8 +30,9 @@ test('should collect data', async () => {
   // Simulates dependency graph execution.
   // See https://github.com/JupiterOne/sdk/issues/262.
   await fetchAccountDetails(context);
-  await fetchGroups(context); //groups come first here
+  await fetchGroups(context); //groups come first in this integration
   await fetchUsers(context);
+  await fetchApplications(context);
 
   // Review snapshot, failure is a regression
   expect({
@@ -102,6 +104,25 @@ test('should collect data', async () => {
         },
       },
       required: ['webLink'],
+    },
+  });
+
+  const apps = context.jobState.collectedEntities.filter((e) =>
+    e._class.includes('Application'),
+  );
+  expect(apps.length).toBeGreaterThan(0);
+  expect(apps).toMatchGraphObjectSchema({
+    _class: ['Application'],
+    schema: {
+      properties: {
+        _type: { const: 'okta_application' },
+        name: { type: 'string' },
+        _rawData: {
+          type: 'array',
+          items: { type: 'object' },
+        },
+      },
+      required: [],
     },
   });
 });
