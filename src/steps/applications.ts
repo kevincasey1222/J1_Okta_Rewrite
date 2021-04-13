@@ -26,7 +26,6 @@ import {
 } from '../util/knownVendors';
 
 import { OktaIntegrationConfig } from '../types';
-import { OktaApplicationGroup } from '../okta/types';
 
 export const APPLICATION_ENTITY_TYPE = 'okta_application';
 export const GROUP_IAM_ROLE_RELATIONSHIP_TYPE =
@@ -135,11 +134,8 @@ export async function fetchApplications({
       }),
     );
 
-    //get the groups that are assigned this app
-    const groups: OktaApplicationGroup[] = await apiClient.getGroupsForApp(
-      app.id,
-    );
-    for (const group of groups || []) {
+    //get the groups that are assigned to this app
+    await apiClient.iterateGroupsForApp(app, async (group) => {
       const groupEntity = await jobState.findEntity(group.id);
 
       if (!groupEntity) {
@@ -174,11 +170,10 @@ export async function fetchApplications({
           }
         }
       }
-    }
+    });
 
-    //get the userIds that are assigned to this app individually
-    const users = await apiClient.getUsersForApp(app.id);
-    for (const user of users || []) {
+    //get the individual users that are assigned to this app (ie. not assigned as part of group)
+    await apiClient.iterateUsersForApp(app, async (user) => {
       const userEntity = await jobState.findEntity(user.id);
 
       if (!userEntity) {
@@ -213,7 +208,7 @@ export async function fetchApplications({
           }
         }
       }
-    }
+    });
   });
 }
 

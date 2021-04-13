@@ -112,22 +112,30 @@ export class APIClient {
     await this.oktaClient.listApplications().each(iteratee);
   }
 
-  //retrieves any user groups assigned to this application
-  public async getGroupsForApp(appId) {
-    const groups: OktaApplicationGroup[] = [];
-    await this.oktaClient.listApplicationGroupAssignments(appId).each((e) => {
-      groups.push(e);
-    });
-    return groups;
+  /**
+   * Iterates each group assigned to a given application.
+   *
+   * @param iteratee receives each resource to produce entities/relationships
+   */
+  public async iterateGroupsForApp(
+    app: OktaApplication,
+    iteratee: ResourceIteratee<OktaApplicationGroup>,
+  ): Promise<void> {
+    await this.oktaClient
+      .listApplicationGroupAssignments(app.id)
+      .each(iteratee);
   }
 
-  //retrieves any individual user ids assigned to this application
-  public async getUsersForApp(appId) {
-    const users: OktaApplicationUser[] = [];
-    await this.oktaClient.listApplicationUsers(appId).each((e) => {
-      users.push(e);
-    });
-    return users;
+  /**
+   * Iterates each individual user assigned to a given application.
+   *
+   * @param iteratee receives each resource to produce entities/relationships
+   */
+  public async iterateUsersForApp(
+    app: OktaApplication,
+    iteratee: ResourceIteratee<OktaApplicationUser>,
+  ): Promise<void> {
+    await this.oktaClient.listApplicationUsers(app.id).each(iteratee);
   }
 }
 
