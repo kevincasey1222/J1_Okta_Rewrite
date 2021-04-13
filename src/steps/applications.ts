@@ -54,16 +54,12 @@ export async function fetchApplications({
 
     if (app._links?.logo) {
       imageUrl = lodash.flatten([app._links.logo])[0].href;
-      //imageUrl = app._links?.logo[0].href;
     }
 
     if (app._links?.appLinks) {
       const links = lodash.flatten([app._links.appLinks]);
       const link = links.find((l) => l.name === 'login') || links[0];
       loginUrl = link && link.href;
-      //same typescript error as in .logo
-      //const link = app._links?.appLinks[0];
-      //loginUrl = link && link.href;
     }
 
     const oktaAccountInfo = getOktaAccountInfo(instance);
