@@ -16,6 +16,7 @@ import { IntegrationConfig } from '../config';
 import { DATA_ACCOUNT_ENTITY } from './account';
 import getOktaAccountAdminUrl from '../util/getOktaAccountAdminUrl';
 import { convertCredentialEmails } from '../util/convertCredentialEmails';
+import { OktaUserGroup, OktaFactor } from '../okta/types';
 
 export const USER_GROUP_ENTITY_TYPE = 'okta_user_group';
 export const APP_USER_GROUP_ENTITY_TYPE = 'okta_app_user_group';
@@ -81,13 +82,13 @@ export async function fetchUsers({
     );
 
     //assign this user to their groups
-    const groupIds = await apiClient.getGroupsForUser(user.id);
-    for (const groupId of groupIds || []) {
-      const groupEntity = await jobState.findEntity(groupId);
+    const groups: OktaUserGroup[] = await apiClient.getGroupsForUser(user.id);
+    for (const group of groups || []) {
+      const groupEntity = await jobState.findEntity(group.id);
 
       if (!groupEntity) {
         throw new IntegrationMissingKeyError(
-          `Expected group with key to exist (key=${groupId})`,
+          `Expected group with key to exist (key=${group.id})`,
         );
       }
 
@@ -103,7 +104,7 @@ export async function fetchUsers({
     //create any MFA devices assigned to this user
     if (user.status !== 'DEPROVISIONED') {
       //asking for devices for DEPROV users throws error
-      const devices = await apiClient.getDevicesForUser(user.id);
+      const devices: OktaFactor[] = await apiClient.getDevicesForUser(user.id);
       for (const device of devices || []) {
         const deviceEntity = await jobState.addEntity(
           createIntegrationEntity({
@@ -227,6 +228,12 @@ export const accessSteps: IntegrationStep<IntegrationConfig>[] = [
         _type: 'okta_user_group_has_user',
         _class: RelationshipClass.HAS,
         sourceType: USER_GROUP_ENTITY_TYPE,
+        targetType: 'okta_user',
+      },
+      {
+        _type: 'okta_app_user_group_has_user',
+        _class: RelationshipClass.HAS,
+        sourceType: APP_USER_GROUP_ENTITY_TYPE,
         targetType: 'okta_user',
       },
       {
