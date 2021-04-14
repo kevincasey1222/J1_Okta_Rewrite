@@ -27,6 +27,40 @@ Object {
     },
     Object {
       "_class": Array [
+        "Service",
+        "Control",
+      ],
+      "_key": "okta:sso:dev-857255",
+      "_rawData": Array [],
+      "_type": "okta_service",
+      "category": Array [
+        "security",
+      ],
+      "controlDomain": "identity-access",
+      "createdOn": undefined,
+      "displayName": "Okta SSO",
+      "function": "SSO",
+      "name": "SSO",
+    },
+    Object {
+      "_class": Array [
+        "Service",
+        "Control",
+      ],
+      "_key": "okta:mfa:dev-857255",
+      "_rawData": Array [],
+      "_type": "okta_service",
+      "category": Array [
+        "security",
+      ],
+      "controlDomain": "identity-access",
+      "createdOn": undefined,
+      "displayName": "Okta MFA",
+      "function": "MFA",
+      "name": "MFA",
+    },
+    Object {
+      "_class": Array [
         "UserGroup",
       ],
       "_key": "00gs5to49AhMBaJNU4x6",
@@ -831,6 +865,7 @@ Object {
   ],
   "encounteredTypes": Array [
     "okta_account",
+    "okta_service",
     "okta_user_group",
     "okta_account_has_user_group",
     "okta_user",
@@ -841,7 +876,7 @@ Object {
     "okta_user_group_assigned_application",
     "okta_user_assigned_application",
   ],
-  "numCollectedEntities": 11,
+  "numCollectedEntities": 13,
   "numCollectedRelationships": 19,
 }
 `;

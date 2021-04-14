@@ -2,12 +2,16 @@ import {
   createIntegrationEntity,
   IntegrationStep,
   IntegrationStepExecutionContext,
+  RelationshipClass,
+  createDirectRelationship,
 } from '@jupiterone/integration-sdk-core';
 
 import { IntegrationConfig } from '../config';
 import getOktaAccountInfo from '../util/getOktaAccountInfo';
 
 export const DATA_ACCOUNT_ENTITY = 'DATA_ACCOUNT_ENTITY';
+export const SERVICE_ENTITY_TYPE = 'okta_service';
+export const SERVICE_ENTITY_CLASS = ['Service', 'Control'];
 
 export async function fetchAccountDetails({
   jobState,
@@ -43,6 +47,58 @@ export async function fetchAccountDetails({
   );
 
   await jobState.setData(DATA_ACCOUNT_ENTITY, accountEntity);
+
+  const ssoServiceEntity = await jobState.addEntity(
+    createIntegrationEntity({
+      entityData: {
+        source: {},
+        assign: {
+          _type: SERVICE_ENTITY_TYPE,
+          _key: `okta:sso:${oktaAccountInfo.name}`,
+          _class: SERVICE_ENTITY_CLASS,
+          name: 'SSO',
+          displayName: 'Okta SSO',
+          category: ['security'],
+          function: 'SSO',
+          controlDomain: 'identity-access',
+        },
+      },
+    }),
+  );
+
+  await jobState.addRelationship(
+    createDirectRelationship({
+      _class: RelationshipClass.HAS,
+      from: accountEntity,
+      to: ssoServiceEntity,
+    }),
+  );
+
+  const mfaServiceEntity = await jobState.addEntity(
+    createIntegrationEntity({
+      entityData: {
+        source: {},
+        assign: {
+          _type: SERVICE_ENTITY_TYPE,
+          _key: `okta:mfa:${oktaAccountInfo.name}`,
+          _class: SERVICE_ENTITY_CLASS,
+          name: 'MFA',
+          displayName: 'Okta MFA',
+          category: ['security'],
+          function: 'MFA',
+          controlDomain: 'identity-access',
+        },
+      },
+    }),
+  );
+
+  await jobState.addRelationship(
+    createDirectRelationship({
+      _class: RelationshipClass.HAS,
+      from: accountEntity,
+      to: mfaServiceEntity,
+    }),
+  );
 }
 
 export const accountSteps: IntegrationStep<IntegrationConfig>[] = [
@@ -55,8 +111,20 @@ export const accountSteps: IntegrationStep<IntegrationConfig>[] = [
         _type: 'okta_account',
         _class: 'Account',
       },
+      {
+        resourceName: 'Okta Service',
+        _type: SERVICE_ENTITY_TYPE,
+        _class: SERVICE_ENTITY_CLASS,
+      },
     ],
-    relationships: [],
+    relationships: [
+      {
+        _type: 'okta_account_has_service',
+        _class: RelationshipClass.HAS,
+        sourceType: 'okta_account',
+        targetType: SERVICE_ENTITY_TYPE,
+      },
+    ],
     dependsOn: [],
     executionHandler: fetchAccountDetails,
   },
