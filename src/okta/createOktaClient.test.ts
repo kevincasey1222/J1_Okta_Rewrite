@@ -86,7 +86,7 @@ test('should delay next request after hitting minimumRateLimitRemaining', async 
   expect(isResolved).toBe(false);
 
   // advance timers and flush all unresolved promises
-  jest.advanceTimersByTime(delayMs);
+  jest.advanceTimersByTime(delayMs * 2);
   await flushPromises();
   expect(isResolved).toBe(true);
 });
