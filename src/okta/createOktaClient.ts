@@ -5,7 +5,6 @@ import { OktaClient } from './types';
 import { OktaIntegrationConfig } from '../types';
 
 const okta = require('@okta/okta-sdk-nodejs');
-const MemoryStore = require('@okta/okta-sdk-nodejs/src/memory-store');
 
 const DEFAULT_MINIMUM_RATE_LIMIT_REMAINING = 5;
 
@@ -125,10 +124,5 @@ export default function createOktaClient(
     orgUrl: config.oktaOrgUrl,
     token: config.oktaApiKey,
     requestExecutor: defaultRequestExecutor,
-    // is this necessary? We're not re-calling the same APIs.
-    cacheStore: new MemoryStore({
-      keyLimit: 100000,
-      expirationPoll: null,
-    }),
   }) as OktaClient;
 }
