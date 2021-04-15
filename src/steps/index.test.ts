@@ -30,7 +30,7 @@ test('should collect data', async () => {
   // Simulates dependency graph execution.
   // See https://github.com/JupiterOne/sdk/issues/262.
   await fetchAccountDetails(context);
-  await fetchGroups(context); //groups come first in this integration
+  await fetchGroups(context); //groups come before Users in this integration
   await fetchUsers(context);
   await fetchApplications(context);
 
@@ -52,12 +52,17 @@ test('should collect data', async () => {
     schema: {
       properties: {
         _type: { const: 'okta_account' },
+        name: { type: 'string' },
+        webLink: {
+          type: 'string',
+          format: 'url',
+        },
         _rawData: {
           type: 'array',
           items: { type: 'object' },
         },
       },
-      required: [],
+      required: ['webLink'],
     },
   });
 
@@ -71,6 +76,7 @@ test('should collect data', async () => {
       properties: {
         _type: { const: 'okta_user' },
         name: { type: 'string' },
+        email: { type: 'string' },
         webLink: {
           type: 'string',
           format: 'url',
@@ -80,7 +86,7 @@ test('should collect data', async () => {
           items: { type: 'object' },
         },
       },
-      required: ['webLink'],
+      required: ['webLink', 'email'],
     },
   });
 
@@ -117,12 +123,16 @@ test('should collect data', async () => {
       properties: {
         _type: { const: 'okta_application' },
         name: { type: 'string' },
+        webLink: {
+          type: 'string',
+          format: 'url',
+        },
         _rawData: {
           type: 'array',
           items: { type: 'object' },
         },
       },
-      required: [],
+      required: ['webLink'],
     },
   });
 });
