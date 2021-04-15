@@ -89,5 +89,5 @@ test('should delay next request after hitting minimumRateLimitRemaining', async 
   jest.advanceTimersByTime(delayMs);
   await flushPromises();
   //todo: find out why this expect test is working locally but failing on GH CI
-  //expect(isResolved).toBe(true);
+  expect(isResolved).toBe(true);
 });
