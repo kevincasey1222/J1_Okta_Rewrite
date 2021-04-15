@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/require-await */
 import { IntegrationLogger } from '@jupiterone/integration-sdk-core';
 import { OktaClient } from './types';
 import { OktaIntegrationConfig } from '../types';
@@ -34,9 +35,9 @@ export class RequestExecutorWithEarlyRateLimiting extends okta.RequestExecutor {
 
   async fetch(request: any) {
     const now = Date.now();
-    if (this.requestAfter && this.requestAfter > now) {
-      const delayMs = this.requestAfter - now;
-      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    if (this.getThrottleActivated()) {
+      const delayMs = this.requestAfter! - now;
+      this.forceSleep(delayMs);
     }
     return super.fetch(request).then((response: any) => {
       this.requestAfter = this.getRequestAfter(response);
@@ -70,6 +71,24 @@ export class RequestExecutorWithEarlyRateLimiting extends okta.RequestExecutor {
       return requestAfter;
     }
     return undefined;
+  }
+
+  delayRequests(delayMs: number) {
+    const now = Date.now();
+    this.requestAfter = now + delayMs;
+  }
+
+  getThrottleActivated() {
+    const now = Date.now();
+    return this.requestAfter && this.requestAfter > now;
+  }
+
+  forceSleep(milliseconds) {
+    const date = Date.now();
+    let currentDate = Date.now();
+    do {
+      currentDate = Date.now();
+    } while (currentDate - date < milliseconds);
   }
 }
 

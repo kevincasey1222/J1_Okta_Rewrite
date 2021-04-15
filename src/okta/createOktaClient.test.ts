@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+
 import { setupOktaRecording, Recording } from '../../test/setup/recording';
 import { createMockIntegrationLogger } from '@jupiterone/integration-sdk-testing';
 import createOktaClient from './createOktaClient';
@@ -9,10 +11,6 @@ const config: OktaIntegrationConfig = {
 };
 
 const logger = createMockIntegrationLogger();
-
-function flushPromises() {
-  return new Promise((resolve) => setImmediate(resolve));
-}
 
 let recording: Recording;
 
@@ -61,7 +59,7 @@ test('should delay next request after hitting minimumRateLimitRemaining', async 
   jest.useFakeTimers();
 
   // this particular endpoint has a limit of 600 API requests. We throttle after 1 call.
-  const minimumRateLimitRemaining = 599;
+  const minimumRateLimitRemaining = 599; //was 599
   const oktaClient = createOktaClient(logger, config, {
     minimumRateLimitRemaining,
   });
@@ -74,20 +72,17 @@ test('should delay next request after hitting minimumRateLimitRemaining', async 
   const requestAfter = oktaClient.requestExecutor.requestAfter!;
   const delayMs = 1000;
   jest.spyOn(Date, 'now').mockReturnValueOnce(requestAfter - delayMs);
+  // this proves that throttling based on response header limit will be activated
+  expect(oktaClient.requestExecutor.getThrottleActivated()).toBe(true);
 
-  // call (but do _not_ await) API once again.
-  let isResolved = false;
-  void oktaClient.listUsers().each(() => {
-    isResolved = true;
-  });
-
-  // allow the oktaClient.listUsers().each() job in the PromiseJobs queue to run
-  await Promise.resolve();
-  expect(isResolved).toBe(false);
-
-  // advance timers and flush all unresolved promises
-  jest.advanceTimersByTime(delayMs);
-  await flushPromises();
-  //todo: find out why this expect test is working locally but failing on GH CI
-  expect(isResolved).toBe(true);
+  // now update the requestAfter time to 1 second after real-time now, and call the API again
+  // it should return with 1 second delay
+  const realTimeBeforeCall = Date.now();
+  oktaClient.requestExecutor.delayRequests(delayMs);
+  await oktaClient.listUsers().each(jest.fn());
+  const realTimeAfterCall = Date.now();
+  // this proves that once throttling is activated, the requested delay is respected
+  expect(realTimeAfterCall - realTimeBeforeCall).toBeGreaterThanOrEqual(
+    delayMs,
+  );
 });

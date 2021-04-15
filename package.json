@@ -19,7 +19,7 @@
     "lint": "eslint . --cache --fix --ext .ts,.tsx",
     "format": "prettier --write '**/*.{ts,js,json,css,md,yml}'",
     "type-check": "tsc",
-    "test": "jest -i",
+    "test": "jest",
     "test:env": "LOAD_ENV=1 yarn test",
     "test:ci": "yarn lint && yarn type-check && yarn test",
     "build": "tsc -p tsconfig.dist.json --declaration",
@@ -27,7 +27,7 @@
     "prepack": "yarn build"
   },
   "dependencies": {
-    "@okta/okta-sdk-nodejs": "^4.5.0",
+    "@okta/okta-sdk-nodejs": "^4.5.1",
     "lodash.startcase": "^4.4.0",
     "promise-retry": "^1.1.1"
   },
