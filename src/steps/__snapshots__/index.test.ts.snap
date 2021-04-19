@@ -635,15 +635,6 @@ Object {
               "selfService": false,
             },
             "created": "2021-04-02T19:38:02.000Z",
-            "credentials": OAuthApplicationCredentials {
-              "signing": ApplicationCredentialsSigning {
-                "kid": "bLRTbe5GSaJXUdAuJs4jWbZqa8oB20RmpM1yx8yB94k",
-              },
-              "userNameTemplate": ApplicationCredentialsUsernameTemplate {
-                "template": "\${source.login}",
-                "type": "BUILT_IN",
-              },
-            },
             "features": Array [],
             "id": "0oa2s9fk7q82KPy9V4x7",
             "label": "Okta Browser Plugin",
@@ -735,15 +726,6 @@ Object {
               "selfService": false,
             },
             "created": "2021-04-11T16:09:31.000Z",
-            "credentials": SchemeApplicationCredentials {
-              "revealPassword": true,
-              "scheme": "EDIT_USERNAME_AND_PASSWORD",
-              "signing": ApplicationCredentialsSigning {},
-              "userNameTemplate": ApplicationCredentialsUsernameTemplate {
-                "template": "\${source.login}",
-                "type": "BUILT_IN",
-              },
-            },
             "features": Array [],
             "id": "0oa2vpmqxp82pl9sk4x7",
             "label": "Dev Integrations Slack",
@@ -842,15 +824,6 @@ Object {
               "selfService": false,
             },
             "created": "2020-08-27T01:06:34.000Z",
-            "credentials": OAuthApplicationCredentials {
-              "signing": ApplicationCredentialsSigning {
-                "kid": "bLRTbe5GSaJXUdAuJs4jWbZqa8oB20RmpM1yx8yB94k",
-              },
-              "userNameTemplate": ApplicationCredentialsUsernameTemplate {
-                "template": "\${source.login}",
-                "type": "BUILT_IN",
-              },
-            },
             "features": Array [],
             "id": "0oas5to408GEd54s04x6",
             "label": "Okta Admin Console",

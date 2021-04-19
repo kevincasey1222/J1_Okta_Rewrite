@@ -43,6 +43,7 @@ export async function fetchApplications({
   const accountEntity = (await jobState.getData(DATA_ACCOUNT_ENTITY)) as Entity;
 
   await apiClient.iterateApplications(async (app) => {
+    delete app.credentials; //some OAuth config options stored here
     const webLink = url.resolve(
       getOktaAccountAdminUrl(instance.config as OktaIntegrationConfig),
       `/admin/app/${app.name}/instance/${app.id}`,
