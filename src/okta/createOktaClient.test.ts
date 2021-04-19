@@ -56,8 +56,6 @@ test('should delay next request after hitting minimumRateLimitRemaining', async 
     name: 'delayNextApiRequest',
   });
 
-  jest.useFakeTimers();
-
   // this particular endpoint has a limit of 600 API requests. We throttle after 1 call.
   const minimumRateLimitRemaining = 599; //was 599
   const oktaClient = createOktaClient(logger, config, {
