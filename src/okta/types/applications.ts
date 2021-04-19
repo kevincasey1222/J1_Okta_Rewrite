@@ -33,6 +33,7 @@ export interface OktaApplication extends OktaResource {
   lastUpdated: string;
   created: string;
   signOnMode: string;
+  credentials?: any;
   accessibility?: any;
   visibility?: any;
   features?: string[];

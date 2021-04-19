@@ -49,22 +49,18 @@ export class APIClient {
 
   /**
    * Iterates each user resource in the provider.
-   *
+   * Then iterates each deprovisioned user resource.
    * @param iteratee receives each resource to produce entities/relationships
    */
   public async iterateUsers(
     iteratee: ResourceIteratee<OktaUser>,
   ): Promise<void> {
-    await this.oktaClient.listUsers().each(async (user) => {
-      await iteratee(user);
-    });
+    await this.oktaClient.listUsers().each(iteratee);
     await this.oktaClient
       .listUsers({
         filter: 'status eq "DEPROVISIONED"',
       })
-      .each(async (user) => {
-        await iteratee(user);
-      });
+      .each(iteratee);
   }
 
   /**
@@ -75,9 +71,34 @@ export class APIClient {
   public async iterateGroups(
     iteratee: ResourceIteratee<OktaUserGroup>,
   ): Promise<void> {
-    await this.oktaClient.listGroups().each(async (group) => {
-      await iteratee(group);
-    });
+    await this.oktaClient.listGroups().each(iteratee);
+  }
+
+  /**
+   * Iterates each group resource assigned to a given user.
+   *
+   * @param iteratee receives each resource to produce relationships
+   */
+  public async iterateGroupsForUser(
+    user: OktaUser,
+    iteratee: ResourceIteratee<OktaUserGroup>,
+  ): Promise<void> {
+    await this.oktaClient.listUserGroups(user.id).each(iteratee);
+  }
+
+  /**
+   * Iterates each Multi-Factor Authentication device assigned to a given user.
+   *
+   * @param iteratee receives each resource to produce relationships
+   */
+  public async iterateFactorsForUser(
+    user: OktaUser,
+    iteratee: ResourceIteratee<OktaFactor>,
+  ): Promise<void> {
+    if (user.status !== 'DEPROVISIONED') {
+      //asking for factors for DEPROV users throws error
+      await this.oktaClient.listFactors(user.id).each(iteratee);
+    }
   }
 
   /**
@@ -88,45 +109,33 @@ export class APIClient {
   public async iterateApplications(
     iteratee: ResourceIteratee<OktaApplication>,
   ): Promise<void> {
-    await this.oktaClient.listApplications().each(async (app) => {
-      await iteratee(app);
-    });
+    await this.oktaClient.listApplications().each(iteratee);
   }
 
-  //retrieves the group ids that a user belongs to
-  public async getGroupsForUser(userId) {
-    const groups: OktaUserGroup[] = [];
-    await this.oktaClient.listUserGroups(userId).each((e) => {
-      groups.push(e);
-    });
-    return groups;
+  /**
+   * Iterates each group assigned to a given application.
+   *
+   * @param iteratee receives each resource to produce entities/relationships
+   */
+  public async iterateGroupsForApp(
+    app: OktaApplication,
+    iteratee: ResourceIteratee<OktaApplicationGroup>,
+  ): Promise<void> {
+    await this.oktaClient
+      .listApplicationGroupAssignments(app.id)
+      .each(iteratee);
   }
 
-  //retrieves any MFA (multi-factor authentication) devices assigned to user
-  public async getDevicesForUser(userId) {
-    const devices: OktaFactor[] = [];
-    await this.oktaClient.listFactors(userId).each((e) => {
-      devices.push(e);
-    });
-    return devices;
-  }
-
-  //retrieves any user groups assigned to this application
-  public async getGroupsForApp(appId) {
-    const groups: OktaApplicationGroup[] = [];
-    await this.oktaClient.listApplicationGroupAssignments(appId).each((e) => {
-      groups.push(e);
-    });
-    return groups;
-  }
-
-  //retrieves any individual user ids assigned to this application
-  public async getUsersForApp(appId) {
-    const users: OktaApplicationUser[] = [];
-    await this.oktaClient.listApplicationUsers(appId).each((e) => {
-      users.push(e);
-    });
-    return users;
+  /**
+   * Iterates each individual user assigned to a given application.
+   *
+   * @param iteratee receives each resource to produce entities/relationships
+   */
+  public async iterateUsersForApp(
+    app: OktaApplication,
+    iteratee: ResourceIteratee<OktaApplicationUser>,
+  ): Promise<void> {
+    await this.oktaClient.listApplicationUsers(app.id).each(iteratee);
   }
 }
 

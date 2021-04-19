@@ -16,7 +16,6 @@ import { IntegrationConfig } from '../config';
 import { DATA_ACCOUNT_ENTITY } from './account';
 import getOktaAccountAdminUrl from '../util/getOktaAccountAdminUrl';
 import { convertCredentialEmails } from '../util/convertCredentialEmails';
-import { OktaUserGroup, OktaFactor } from '../okta/types';
 
 export const USER_GROUP_ENTITY_TYPE = 'okta_user_group';
 export const APP_USER_GROUP_ENTITY_TYPE = 'okta_app_user_group';
@@ -82,8 +81,7 @@ export async function fetchUsers({
     );
 
     //assign this user to their groups
-    const groups: OktaUserGroup[] = await apiClient.getGroupsForUser(user.id);
-    for (const group of groups || []) {
+    await apiClient.iterateGroupsForUser(user, async (group) => {
       const groupEntity = await jobState.findEntity(group.id);
 
       if (!groupEntity) {
@@ -99,46 +97,42 @@ export async function fetchUsers({
           to: userEntity,
         }),
       );
-    }
+    });
 
-    //create any MFA devices assigned to this user
-    if (user.status !== 'DEPROVISIONED') {
-      //asking for devices for DEPROV users throws error
-      const devices: OktaFactor[] = await apiClient.getDevicesForUser(user.id);
-      for (const device of devices || []) {
-        const deviceEntity = await jobState.addEntity(
-          createIntegrationEntity({
-            entityData: {
-              source: device,
-              assign: {
-                _key: device.id,
-                _type: MFA_DEVICE_ENTITY_TYPE,
-                _class: ['Key', 'AccessKey'],
-                displayName: `${device.provider} ${device.factorType}`,
-                id: device.id,
-                factorType: device.factorType,
-                provider: device.provider,
-                vendorName: device.vendorName,
-                device: device.device,
-                deviceType: device.deviceType,
-                status: device.status,
-                created: device.created,
-                lastUpdated: device.lastUpdated,
-                active: device.status === 'ACTIVE',
-              },
+    //discover any Multi Factor Authentication devices assigned to this user
+    await apiClient.iterateFactorsForUser(user, async (factor) => {
+      const factorEntity = await jobState.addEntity(
+        createIntegrationEntity({
+          entityData: {
+            source: factor,
+            assign: {
+              _key: factor.id,
+              _type: MFA_DEVICE_ENTITY_TYPE,
+              _class: ['Key', 'AccessKey'],
+              displayName: `${factor.provider} ${factor.factorType}`,
+              id: factor.id,
+              factorType: factor.factorType,
+              provider: factor.provider,
+              vendorName: factor.vendorName,
+              device: factor.device,
+              deviceType: factor.deviceType,
+              status: factor.status,
+              created: factor.created,
+              lastUpdated: factor.lastUpdated,
+              active: factor.status === 'ACTIVE',
             },
-          }),
-        );
+          },
+        }),
+      );
 
-        await jobState.addRelationship(
-          createDirectRelationship({
-            _class: RelationshipClass.ASSIGNED,
-            from: userEntity,
-            to: deviceEntity,
-          }),
-        );
-      }
-    }
+      await jobState.addRelationship(
+        createDirectRelationship({
+          _class: RelationshipClass.ASSIGNED,
+          from: userEntity,
+          to: factorEntity,
+        }),
+      );
+    });
   });
 }
 
@@ -171,6 +165,7 @@ export async function fetchGroups({
             _class: 'UserGroup',
             id: group.id,
             webLink: webLink,
+            name: group.profile.name,
             displayName: group.profile.name,
             created: parseTimePropertyValue(group.created)!,
             createdOn: parseTimePropertyValue(group.created)!,
@@ -184,7 +179,6 @@ export async function fetchGroups({
             )!,
             objectClass: group.objectClass,
             type: group.type,
-            name: group.profile.name,
             description: group.profile.description,
           },
         },

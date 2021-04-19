@@ -7,6 +7,7 @@ import { setupOktaRecording } from '../../test/setup/recording';
 import { IntegrationConfig } from '../config';
 import { fetchGroups, fetchUsers } from './access';
 import { fetchAccountDetails } from './account';
+import { fetchApplications } from './applications';
 
 import { integrationConfig } from '../../test/config';
 
@@ -29,8 +30,9 @@ test('should collect data', async () => {
   // Simulates dependency graph execution.
   // See https://github.com/JupiterOne/sdk/issues/262.
   await fetchAccountDetails(context);
-  await fetchGroups(context); //groups come first here
+  await fetchGroups(context); //groups come before Users in this integration
   await fetchUsers(context);
+  await fetchApplications(context);
 
   // Review snapshot, failure is a regression
   expect({
@@ -50,24 +52,6 @@ test('should collect data', async () => {
     schema: {
       properties: {
         _type: { const: 'okta_account' },
-        _rawData: {
-          type: 'array',
-          items: { type: 'object' },
-        },
-      },
-      required: [],
-    },
-  });
-
-  const users = context.jobState.collectedEntities.filter((e) =>
-    e._class.includes('User'),
-  );
-  expect(users.length).toBeGreaterThan(0);
-  expect(users).toMatchGraphObjectSchema({
-    _class: ['User'],
-    schema: {
-      properties: {
-        _type: { const: 'okta_user' },
         name: { type: 'string' },
         webLink: {
           type: 'string',
@@ -82,6 +66,30 @@ test('should collect data', async () => {
     },
   });
 
+  const users = context.jobState.collectedEntities.filter((e) =>
+    e._class.includes('User'),
+  );
+  expect(users.length).toBeGreaterThan(0);
+  expect(users).toMatchGraphObjectSchema({
+    _class: ['User'],
+    schema: {
+      properties: {
+        _type: { const: 'okta_user' },
+        name: { type: 'string' },
+        email: { type: 'string' },
+        webLink: {
+          type: 'string',
+          format: 'url',
+        },
+        _rawData: {
+          type: 'array',
+          items: { type: 'object' },
+        },
+      },
+      required: ['webLink', 'email'],
+    },
+  });
+
   const userGroups = context.jobState.collectedEntities.filter((e) =>
     e._class.includes('UserGroup'),
   );
@@ -91,6 +99,29 @@ test('should collect data', async () => {
     schema: {
       properties: {
         _type: { const: 'okta_user_group' },
+        name: { type: 'string' },
+        webLink: {
+          type: 'string',
+          format: 'url',
+        },
+        _rawData: {
+          type: 'array',
+          items: { type: 'object' },
+        },
+      },
+      required: ['webLink'],
+    },
+  });
+
+  const apps = context.jobState.collectedEntities.filter((e) =>
+    e._class.includes('Application'),
+  );
+  expect(apps.length).toBeGreaterThan(0);
+  expect(apps).toMatchGraphObjectSchema({
+    _class: ['Application'],
+    schema: {
+      properties: {
+        _type: { const: 'okta_application' },
         name: { type: 'string' },
         webLink: {
           type: 'string',

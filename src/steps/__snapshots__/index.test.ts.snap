@@ -27,6 +27,40 @@ Object {
     },
     Object {
       "_class": Array [
+        "Service",
+        "Control",
+      ],
+      "_key": "okta:sso:dev-857255",
+      "_rawData": Array [],
+      "_type": "okta_service",
+      "category": Array [
+        "security",
+      ],
+      "controlDomain": "identity-access",
+      "createdOn": undefined,
+      "displayName": "Okta SSO",
+      "function": "SSO",
+      "name": "SSO",
+    },
+    Object {
+      "_class": Array [
+        "Service",
+        "Control",
+      ],
+      "_key": "okta:mfa:dev-857255",
+      "_rawData": Array [],
+      "_type": "okta_service",
+      "category": Array [
+        "security",
+      ],
+      "controlDomain": "identity-access",
+      "createdOn": undefined,
+      "displayName": "Okta MFA",
+      "function": "MFA",
+      "name": "MFA",
+    },
+    Object {
+      "_class": Array [
         "UserGroup",
       ],
       "_key": "00gs5to49AhMBaJNU4x6",
@@ -224,7 +258,7 @@ Object {
             "activated": "2021-03-25T13:00:33.000Z",
             "created": "2021-03-25T13:00:33.000Z",
             "id": "00u2ot2iur46vIUsV4x7",
-            "lastLogin": "2021-03-29T14:40:31.000Z",
+            "lastLogin": "2021-04-13T15:20:22.000Z",
             "lastUpdated": "2021-03-25T15:00:14.000Z",
             "passwordChanged": "2021-03-25T15:00:14.000Z",
             "profile": UserProfile {
@@ -252,8 +286,8 @@ Object {
       "displayName": "thomaskevincasey74@gmail.com",
       "email": "thomaskevincasey74@gmail.com",
       "id": "00u2ot2iur46vIUsV4x7",
-      "lastLogin": 1617028831000,
-      "lastLoginOn": 1617028831000,
+      "lastLogin": 1618327222000,
+      "lastLoginOn": 1618327222000,
       "lastUpdated": 1616684414000,
       "lastUpdatedOn": 1616684414000,
       "name": "Kevin Casey",
@@ -567,8 +601,300 @@ Object {
       "verifiedEmails": undefined,
       "webLink": "https://dev-857255-admin.okta.com/admin/user/profile/view/00us60gayc3EIwpRc4x6",
     },
+    Object {
+      "_class": Array [
+        "Application",
+      ],
+      "_key": "0oa2s9fk7q82KPy9V4x7",
+      "_rawData": Array [
+        Object {
+          "name": "default",
+          "rawData": OpenIdConnectApplication {
+            "_links": Object {
+              "appLinks": Array [],
+              "deactivate": Object {
+                "href": "https://dev-857255.okta.com/api/v1/apps/0oa2s9fk7q82KPy9V4x7/lifecycle/deactivate",
+              },
+              "groups": Object {
+                "href": "https://dev-857255.okta.com/api/v1/apps/0oa2s9fk7q82KPy9V4x7/groups",
+              },
+              "logo": Array [
+                Object {
+                  "href": "https://ok11static.oktacdn.com/assets/img/logos/okta-logo-browser-plugin.1db9f55776407dfc548a5d6985ff280a.svg",
+                  "name": "medium",
+                  "type": "image/png",
+                },
+              ],
+              "users": Object {
+                "href": "https://dev-857255.okta.com/api/v1/apps/0oa2s9fk7q82KPy9V4x7/users",
+              },
+            },
+            "accessibility": ApplicationAccessibility {
+              "errorRedirectUrl": null,
+              "loginRedirectUrl": null,
+              "selfService": false,
+            },
+            "created": "2021-04-02T19:38:02.000Z",
+            "features": Array [],
+            "id": "0oa2s9fk7q82KPy9V4x7",
+            "label": "Okta Browser Plugin",
+            "lastUpdated": "2021-04-02T19:38:02.000Z",
+            "name": "okta_browser_plugin",
+            "settings": OpenIdConnectApplicationSettings {
+              "app": ApplicationSettingsApplication {},
+              "notifications": ApplicationSettingsNotifications {
+                "vpn": ApplicationSettingsNotificationsVpn {
+                  "helpUrl": null,
+                  "message": null,
+                  "network": ApplicationSettingsNotificationsVpnNetwork {
+                    "connection": "DISABLED",
+                  },
+                },
+              },
+            },
+            "signOnMode": "OPENID_CONNECT",
+            "status": "ACTIVE",
+            "visibility": ApplicationVisibility {
+              "appLinks": Object {},
+              "autoSubmitToolbar": false,
+              "hide": ApplicationVisibilityHide {
+                "iOS": false,
+                "web": false,
+              },
+            },
+          },
+        },
+      ],
+      "_type": "okta_application",
+      "active": true,
+      "appAccountType": "okta_browser_plugin_account",
+      "appVendorName": "Okta Browser Plugin",
+      "created": "2021-04-02T19:38:02.000Z",
+      "createdOn": undefined,
+      "displayName": "Okta Browser Plugin",
+      "features": Array [],
+      "id": "0oa2s9fk7q82KPy9V4x7",
+      "imageUrl": "https://ok11static.oktacdn.com/assets/img/logos/okta-logo-browser-plugin.1db9f55776407dfc548a5d6985ff280a.svg",
+      "isMultiInstanceApp": false,
+      "isSAMLApp": false,
+      "label": "Okta Browser Plugin",
+      "lastUpdated": "2021-04-02T19:38:02.000Z",
+      "loginUrl": undefined,
+      "name": "okta_browser_plugin",
+      "shortName": "okta_browser_plugin",
+      "signOnMode": "OPENID_CONNECT",
+      "status": "ACTIVE",
+      "webLink": "https://dev-857255-admin.okta.com/admin/app/okta_browser_plugin/instance/0oa2s9fk7q82KPy9V4x7",
+    },
+    Object {
+      "_class": Array [
+        "Application",
+      ],
+      "_key": "0oa2vpmqxp82pl9sk4x7",
+      "_rawData": Array [
+        Object {
+          "name": "default",
+          "rawData": AutoLoginApplication {
+            "_links": Object {
+              "appLinks": Array [
+                Object {
+                  "href": "https://dev-857255.okta.com/home/slack/0oa2vpmqxp82pl9sk4x7/19411",
+                  "name": "slack_ink",
+                  "type": "text/html",
+                },
+              ],
+              "deactivate": Object {
+                "href": "https://dev-857255.okta.com/api/v1/apps/0oa2vpmqxp82pl9sk4x7/lifecycle/deactivate",
+              },
+              "groups": Object {
+                "href": "https://dev-857255.okta.com/api/v1/apps/0oa2vpmqxp82pl9sk4x7/groups",
+              },
+              "logo": Array [
+                Object {
+                  "href": "https://ok11static.oktacdn.com/fs/bcg/4/gfs21ghft9NRPUARi4x7",
+                  "name": "medium",
+                  "type": "image/png",
+                },
+              ],
+              "users": Object {
+                "href": "https://dev-857255.okta.com/api/v1/apps/0oa2vpmqxp82pl9sk4x7/users",
+              },
+            },
+            "accessibility": ApplicationAccessibility {
+              "errorRedirectUrl": null,
+              "loginRedirectUrl": null,
+              "selfService": false,
+            },
+            "created": "2021-04-11T16:09:31.000Z",
+            "features": Array [],
+            "id": "0oa2vpmqxp82pl9sk4x7",
+            "label": "Dev Integrations Slack",
+            "lastUpdated": "2021-04-11T16:10:13.000Z",
+            "name": "slack",
+            "settings": AutoLoginApplicationSettings {
+              "app": ApplicationSettingsApplication {
+                "domain": "jptrone.slack.com",
+                "userEmailValue": "false",
+              },
+              "notifications": ApplicationSettingsNotifications {
+                "vpn": ApplicationSettingsNotificationsVpn {
+                  "helpUrl": null,
+                  "message": null,
+                  "network": ApplicationSettingsNotificationsVpnNetwork {
+                    "connection": "DISABLED",
+                  },
+                },
+              },
+            },
+            "signOnMode": "AUTO_LOGIN",
+            "status": "ACTIVE",
+            "visibility": ApplicationVisibility {
+              "appLinks": Object {
+                "slack_ink": true,
+              },
+              "autoSubmitToolbar": true,
+              "hide": ApplicationVisibilityHide {
+                "iOS": false,
+                "web": false,
+              },
+            },
+          },
+        },
+      ],
+      "_type": "okta_application",
+      "active": true,
+      "appAccountId": "jptrone.slack.com",
+      "appAccountType": "slack_account",
+      "appDomain": "jptrone.slack.com",
+      "appVendorName": "Slack",
+      "created": "2021-04-11T16:09:31.000Z",
+      "createdOn": undefined,
+      "displayName": "Dev Integrations Slack",
+      "features": Array [],
+      "id": "0oa2vpmqxp82pl9sk4x7",
+      "imageUrl": "https://ok11static.oktacdn.com/fs/bcg/4/gfs21ghft9NRPUARi4x7",
+      "isMultiInstanceApp": false,
+      "isSAMLApp": false,
+      "label": "Dev Integrations Slack",
+      "lastUpdated": "2021-04-11T16:10:13.000Z",
+      "loginUrl": "https://dev-857255.okta.com/home/slack/0oa2vpmqxp82pl9sk4x7/19411",
+      "name": "slack",
+      "shortName": "slack",
+      "signOnMode": "AUTO_LOGIN",
+      "status": "ACTIVE",
+      "webLink": "https://dev-857255-admin.okta.com/admin/app/slack/instance/0oa2vpmqxp82pl9sk4x7",
+    },
+    Object {
+      "_class": Array [
+        "Application",
+      ],
+      "_key": "0oas5to408GEd54s04x6",
+      "_rawData": Array [
+        Object {
+          "name": "default",
+          "rawData": OpenIdConnectApplication {
+            "_links": Object {
+              "appLinks": Array [
+                Object {
+                  "href": "https://dev-857255.okta.com/home/saasure/0oas5to408GEd54s04x6/2",
+                  "name": "admin",
+                  "type": "text/html",
+                },
+              ],
+              "deactivate": Object {
+                "href": "https://dev-857255.okta.com/api/v1/apps/0oas5to408GEd54s04x6/lifecycle/deactivate",
+              },
+              "groups": Object {
+                "href": "https://dev-857255.okta.com/api/v1/apps/0oas5to408GEd54s04x6/groups",
+              },
+              "logo": Array [
+                Object {
+                  "href": "https://ok11static.oktacdn.com/assets/img/logos/okta_admin_app.da3325676d57eaf566cb786dd0c7a819.png",
+                  "name": "medium",
+                  "type": "image/png",
+                },
+              ],
+              "users": Object {
+                "href": "https://dev-857255.okta.com/api/v1/apps/0oas5to408GEd54s04x6/users",
+              },
+            },
+            "accessibility": ApplicationAccessibility {
+              "errorRedirectUrl": null,
+              "loginRedirectUrl": null,
+              "selfService": false,
+            },
+            "created": "2020-08-27T01:06:34.000Z",
+            "features": Array [],
+            "id": "0oas5to408GEd54s04x6",
+            "label": "Okta Admin Console",
+            "lastUpdated": "2020-12-12T07:34:02.000Z",
+            "name": "saasure",
+            "settings": OpenIdConnectApplicationSettings {
+              "app": ApplicationSettingsApplication {},
+              "notifications": ApplicationSettingsNotifications {
+                "vpn": ApplicationSettingsNotificationsVpn {
+                  "helpUrl": null,
+                  "message": null,
+                  "network": ApplicationSettingsNotificationsVpnNetwork {
+                    "connection": "DISABLED",
+                  },
+                },
+              },
+            },
+            "signOnMode": "OPENID_CONNECT",
+            "status": "ACTIVE",
+            "visibility": ApplicationVisibility {
+              "appLinks": Object {
+                "admin": true,
+              },
+              "autoSubmitToolbar": false,
+              "hide": ApplicationVisibilityHide {
+                "iOS": true,
+                "web": true,
+              },
+            },
+          },
+        },
+      ],
+      "_type": "okta_application",
+      "active": true,
+      "appAccountType": "saasure_account",
+      "appVendorName": "Saasure",
+      "created": "2020-08-27T01:06:34.000Z",
+      "createdOn": undefined,
+      "displayName": "Okta Admin Console",
+      "features": Array [],
+      "id": "0oas5to408GEd54s04x6",
+      "imageUrl": "https://ok11static.oktacdn.com/assets/img/logos/okta_admin_app.da3325676d57eaf566cb786dd0c7a819.png",
+      "isMultiInstanceApp": false,
+      "isSAMLApp": false,
+      "label": "Okta Admin Console",
+      "lastUpdated": "2020-12-12T07:34:02.000Z",
+      "loginUrl": "https://dev-857255.okta.com/home/saasure/0oas5to408GEd54s04x6/2",
+      "name": "saasure",
+      "shortName": "saasure",
+      "signOnMode": "OPENID_CONNECT",
+      "status": "ACTIVE",
+      "webLink": "https://dev-857255-admin.okta.com/admin/app/saasure/instance/0oas5to408GEd54s04x6",
+    },
   ],
   "collectedRelationships": Array [
+    Object {
+      "_class": "HAS",
+      "_fromEntityKey": "okta_account_dev-857255.okta.com/",
+      "_key": "okta_account_dev-857255.okta.com/|has|okta:sso:dev-857255",
+      "_toEntityKey": "okta:sso:dev-857255",
+      "_type": "okta_account_has_service",
+      "displayName": "HAS",
+    },
+    Object {
+      "_class": "HAS",
+      "_fromEntityKey": "okta_account_dev-857255.okta.com/",
+      "_key": "okta_account_dev-857255.okta.com/|has|okta:mfa:dev-857255",
+      "_toEntityKey": "okta:mfa:dev-857255",
+      "_type": "okta_account_has_service",
+      "displayName": "HAS",
+    },
     Object {
       "_class": "HAS",
       "_fromEntityKey": "okta_account_dev-857255.okta.com/",
@@ -697,16 +1023,94 @@ Object {
       "_type": "okta_user_group_has_user",
       "displayName": "HAS",
     },
+    Object {
+      "_class": "HAS",
+      "_fromEntityKey": "okta_account_dev-857255.okta.com/",
+      "_key": "okta_account_dev-857255.okta.com/|has|0oa2s9fk7q82KPy9V4x7",
+      "_toEntityKey": "0oa2s9fk7q82KPy9V4x7",
+      "_type": "okta_account_has_application",
+      "displayName": "HAS",
+    },
+    Object {
+      "_class": "HAS",
+      "_fromEntityKey": "okta_account_dev-857255.okta.com/",
+      "_key": "okta_account_dev-857255.okta.com/|has|0oa2vpmqxp82pl9sk4x7",
+      "_toEntityKey": "0oa2vpmqxp82pl9sk4x7",
+      "_type": "okta_account_has_application",
+      "displayName": "HAS",
+    },
+    Object {
+      "_class": "ASSIGNED",
+      "_fromEntityKey": "00g2ovdjf9Ahbffgj4x7",
+      "_key": "00g2ovdjf9Ahbffgj4x7|assigned|0oa2vpmqxp82pl9sk4x7",
+      "_toEntityKey": "0oa2vpmqxp82pl9sk4x7",
+      "_type": "okta_user_group_assigned_application",
+      "displayName": "ASSIGNED",
+    },
+    Object {
+      "_class": "ASSIGNED",
+      "_fromEntityKey": "00u2ot2iur46vIUsV4x7",
+      "_key": "00u2ot2iur46vIUsV4x7|assigned|0oa2vpmqxp82pl9sk4x7",
+      "_toEntityKey": "0oa2vpmqxp82pl9sk4x7",
+      "_type": "okta_user_assigned_application",
+      "displayName": "ASSIGNED",
+    },
+    Object {
+      "_class": "HAS",
+      "_fromEntityKey": "okta_account_dev-857255.okta.com/",
+      "_key": "okta_account_dev-857255.okta.com/|has|0oas5to408GEd54s04x6",
+      "_toEntityKey": "0oas5to408GEd54s04x6",
+      "_type": "okta_account_has_application",
+      "displayName": "HAS",
+    },
+    Object {
+      "_class": "ASSIGNED",
+      "_fromEntityKey": "00us5zkpf7nGTeKXu4x6",
+      "_key": "00us5zkpf7nGTeKXu4x6|assigned|0oas5to408GEd54s04x6",
+      "_toEntityKey": "0oas5to408GEd54s04x6",
+      "_type": "okta_user_assigned_application",
+      "displayName": "ASSIGNED",
+    },
+    Object {
+      "_class": "ASSIGNED",
+      "_fromEntityKey": "00u1cagurdhtxqBdf4x7",
+      "_key": "00u1cagurdhtxqBdf4x7|assigned|0oas5to408GEd54s04x6",
+      "_toEntityKey": "0oas5to408GEd54s04x6",
+      "_type": "okta_user_assigned_application",
+      "displayName": "ASSIGNED",
+    },
+    Object {
+      "_class": "ASSIGNED",
+      "_fromEntityKey": "00u2ot2iur46vIUsV4x7",
+      "_key": "00u2ot2iur46vIUsV4x7|assigned|0oas5to408GEd54s04x6",
+      "_toEntityKey": "0oas5to408GEd54s04x6",
+      "_type": "okta_user_assigned_application",
+      "displayName": "ASSIGNED",
+    },
+    Object {
+      "_class": "ASSIGNED",
+      "_fromEntityKey": "00us5to77GW1mVs6w4x6",
+      "_key": "00us5to77GW1mVs6w4x6|assigned|0oas5to408GEd54s04x6",
+      "_toEntityKey": "0oas5to408GEd54s04x6",
+      "_type": "okta_user_assigned_application",
+      "displayName": "ASSIGNED",
+    },
   ],
   "encounteredTypes": Array [
     "okta_account",
+    "okta_service",
+    "okta_account_has_service",
     "okta_user_group",
     "okta_account_has_user_group",
     "okta_user",
     "okta_account_has_user",
     "okta_user_group_has_user",
+    "okta_application",
+    "okta_account_has_application",
+    "okta_user_group_assigned_application",
+    "okta_user_assigned_application",
   ],
-  "numCollectedEntities": 10,
-  "numCollectedRelationships": 16,
+  "numCollectedEntities": 15,
+  "numCollectedRelationships": 27,
 }
 `;
