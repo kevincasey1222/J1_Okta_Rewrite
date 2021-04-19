@@ -57,7 +57,7 @@ test('should delay next request after hitting minimumRateLimitRemaining', async 
   });
 
   // this particular endpoint has a limit of 600 API requests. We throttle after 1 call.
-  const minimumRateLimitRemaining = 599; //was 599
+  const minimumRateLimitRemaining = 599;
   const oktaClient = createOktaClient(logger, config, {
     minimumRateLimitRemaining,
   });
@@ -65,21 +65,25 @@ test('should delay next request after hitting minimumRateLimitRemaining', async 
   // call response.each in order to execute API request one time
   await oktaClient.listUsers().each(jest.fn());
 
-  // mock Date.now() to return 1 second earlier than `requestAfter`
+  // show that requestAfter was set by the above API call. It should not be undefined.
+  // requestAfter is expected to be set during any API call by the 'x-rate-limit-reset' header
   expect(oktaClient.requestExecutor.requestAfter).toEqual(expect.any(Number));
   const requestAfter = oktaClient.requestExecutor.requestAfter!;
+
+  // mock Date.now() to return 1 second earlier than `requestAfter`,
+  // so that requestAfter is > Date.now()
+  // that's what getThrottleActivated should be checking
   const delayMs = 1000;
   jest.spyOn(Date, 'now').mockReturnValueOnce(requestAfter - delayMs);
-  // this proves that throttling based on response header limit will be activated
   expect(oktaClient.requestExecutor.getThrottleActivated()).toBe(true);
 
-  // now update the requestAfter time to 1 second after real-time now, and call the API again
-  // it should return with 1 second delay
+  // now manually update the requestAfter time to 1 second after real-time now, and call the API again
+  // it should return after a 1 second delay
   const realTimeBeforeCall = Date.now();
-  oktaClient.requestExecutor.delayRequests(delayMs);
+  oktaClient.requestExecutor.delayRequests(delayMs); //sets requestAfter to now + delayms
   await oktaClient.listUsers().each(jest.fn());
   const realTimeAfterCall = Date.now();
-  // this proves that once throttling is activated, the requested delay is respected
+  // this proves that if requestAfter > Date.now(), the API call is delayed by the difference
   expect(realTimeAfterCall - realTimeBeforeCall).toBeGreaterThanOrEqual(
     delayMs,
   );
